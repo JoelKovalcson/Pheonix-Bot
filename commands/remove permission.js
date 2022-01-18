@@ -3,47 +3,30 @@ const { Role, GuildMember } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('addperm')
+		.setName('removeperm')
 		.setDescription('Set whether a user or role can use a specific command')
 		.setDefaultPermission(true)
 		.addMentionableOption(option => option.setName('target').setDescription('The user or role').setRequired(true))
-		.addStringOption(option => option.setName('command').setDescription('The command to give use permission').setRequired(true))
-		.addBooleanOption(option => option.setName('perm').setDescription('Whether to give or revoke permission').setRequired(true)),
+		.addStringOption(option => option.setName('command').setDescription('The command to remove permission').setRequired(true)),
 	async execute(interaction) {
 		const mentionable = interaction.options.getMentionable('target');
 		const command_name = interaction.options.getString('command');
-		const perm_set = interaction.options.getBoolean('perm');
 		const command = (await interaction.client.guilds.cache.get(interaction.guildId).commands.fetch()).find((command) => command.name === command_name);
-		let perms;
-		let ping;
-
 		if(!command) {
 			interaction.reply('Command name not found.');
 			return;
 		}
-		
 		if (mentionable instanceof Role) {
-			ping = `<@&${mentionable.id}>`;
-			perms = {
-				id: mentionable.id,
-				type: 'ROLE',
-				permission: perm_set
-			};
+			command.permissions.remove({command: command.id, roles: mentionable.id})
+				.then(interaction.reply({content:`Permission for \`${command_name}\` has been removed from <@&${mentionable.id}>`, ephemeral: true}));
 		}
 		else if (mentionable instanceof GuildMember) {
-			ping = `<@${mentionable.id}>`;
-			perms = {
-				id: mentionable.id,
-				type: 'USER',
-				permission: perm_set
-			};
+			command.permissions.remove({command: command.id, users: mentionable.id})
+				.then(interaction.reply({content:`Permission for \`${command_name}\` has been removed from <@${mentionable.id}>`, ephemeral: true}));
 		}
 		else {
-			interaction.reply('Invalid Role or User provided.');
+			interaction.reply('Invalid arguments provided.');
 			return;
 		}
-		
-		command.permissions.add({permissions: [perms]})
-			.then(interaction.reply({content:`Permission for \`${command_name}\` turned ${(perm_set) ? 'on' : 'off'} for ${ping}`, ephemeral: true}));
 	}
 }
