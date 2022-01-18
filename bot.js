@@ -1,9 +1,8 @@
 require('dotenv').config();
-const { Client, Intents } = require('discord.js');
-
+const { Client, Intents, Collection } = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.GUILDS]});
-
-require('./commands')(client);
+const {commands, commandsJSON} = require('./commands');
+client.commands = commands;
 
 client.once('ready', () => {
 	console.log('Ready!');
