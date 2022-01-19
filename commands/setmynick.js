@@ -1,5 +1,5 @@
 const {SlashCommandBuilder} = require('@discordjs/builders');
-const { GuildMember, User } = require('discord.js');
+const { getVisitorRole } = require('../util/get-roles');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -13,13 +13,15 @@ module.exports = {
 		// This should work as long as the nickname isn't too long and the bot has perms higher than the user.
 		interaction.member.setNickname(nick)
 			.then(() => {
-				const visitor = 
-				interaction.reply(`Successfully set nickname to: ${nick}`)
-				interaction.member.roles.add(visitor)
+				getVisitorRole(interaction.client.guilds.cache.get(interaction.guildId)).then((visitor_role) => {
+					interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: true});
+					interaction.member.roles.add(visitor_role);
+					return `<@${member.id}> has changed nickname to '${nick}'.`;
+				});
 			})
 			.catch(err => {
 				console.log(err);
-				interaction.reply(`An error occurred setting nickname to: ${nick}`);
+				interaction.reply({content:`An error occurred setting nickname to: ${nick}`, ephemeral: true});
 			});
 	}
 }
