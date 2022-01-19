@@ -36,7 +36,10 @@ module.exports = {
 			let roles = '';
 			let users = '';
 			for (var perm of perms) {
-				if (perm.type == 'ROLE') roles += ` <@&${perm.id}>`
+				if (perm.type == 'ROLE') {
+					if (perm.id == interaction.client.guilds.cache.get(interaction.guildId).roles.everyone.id) roles += ` @everyone`
+					else roles += ` <@&${perm.id}>`
+				}
 				else if (perm.type == 'USER') users += ` <@${perm.id}>`;
 			}
 			// If role or users existed, add them to embed

@@ -23,7 +23,8 @@ module.exports = {
 		}
 		
 		if (mentionable instanceof Role) {
-			ping = `<@&${mentionable.id}>`;
+			if (interaction.client.guilds.cache.get(interaction.guildId).roles.everyone.id == mentionable.id) ping = `@everyone`
+			else ping = `<@&${mentionable.id}>`;
 			perms = {
 				id: mentionable.id,
 				type: 'ROLE',
