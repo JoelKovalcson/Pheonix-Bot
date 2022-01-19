@@ -9,6 +9,7 @@ module.exports = {
 		.addStringOption(option => option.setName('command').setDescription('The command to list permissions').setRequired(true)),
 	async execute(interaction) {
 		const command_name = interaction.options.getString('command');
+		// Might look into seeing if there's a better way of doing this? Feels clunky
 		const command = (await interaction.client.guilds.cache.get(interaction.guildId).commands.fetch()).find((command) => command.name === command_name);
 
 		if (!command) {
@@ -17,6 +18,7 @@ module.exports = {
 		}
 
 		let perms;
+		// If permissions don't exist for this command, set undefined
 		try {
 			perms = await command.permissions.fetch();
 		}
@@ -24,11 +26,12 @@ module.exports = {
 			perms = undefined;
 		}
 
+		// Create embed displaying default behavior for command
 		const em = new MessageEmbed()
 			.setTitle(command_name)
 			.setDescription(`Default permission: \`${(command.defaultPermission) ? 'on' : 'off'}\``);
 
-		
+		// If permissions exist, fill out role & user restrictions
 		if (perms) {
 			let roles = '';
 			let users = '';
@@ -36,6 +39,7 @@ module.exports = {
 				if (perm.type == 'ROLE') roles += ` <@&${perm.id}>`
 				else if (perm.type == 'USER') users += ` <@${perm.id}>`;
 			}
+			// If role or users existed, add them to embed
 			if(roles) em.addField('Roles', roles, false);
 			if(users) em.addField('Users', users, false);
 		}
