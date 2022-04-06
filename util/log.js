@@ -1,8 +1,8 @@
 const { getLogChannel } = require("./get-channels");
 
-async function logMessage(guild, message = null, embed = null) {
+async function logMessage(guild, message) {
 	getLogChannel(guild).then((channel) => {
-		channel.send({content: message, embed: embed});
+		channel.send({...message});
 	});
 }
 

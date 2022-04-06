@@ -1,5 +1,5 @@
 const {	SlashCommandBuilder } = require('@discordjs/builders');
-const {	Role, GuildMember, MessageEmbed } = require('discord.js');
+const {	MessageEmbed } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -12,9 +12,13 @@ module.exports = {
 		// Might look into seeing if there's a better way of doing this? Feels clunky
 		const command = (await interaction.client.guilds.cache.get(interaction.guildId).commands.fetch()).find((command) => command.name === command_name);
 
+		const logMessage = new MessageEmbed()
+			.setTitle('listperm')
+			.setDescription(`Used by: <@!${interaction.user.id}>`);
+
 		if (!command) {
-			interaction.reply('Command name not found.');
-			return;
+			interaction.reply({content: 'Command name not found.', ephemeral: true});
+			return {embeds: [logMessage.addField('Failed', 'Command name not found', false)]};
 		}
 
 		let perms;
@@ -27,7 +31,7 @@ module.exports = {
 		}
 
 		// Create embed displaying default behavior for command
-		const em = new MessageEmbed()
+		const response = new MessageEmbed()
 			.setTitle(command_name)
 			.setDescription(`Default permission: \`${(command.defaultPermission) ? 'on' : 'off'}\``);
 
@@ -45,17 +49,18 @@ module.exports = {
 				else if (perm.type == 'USER') perm.permission ? (usersEnabled += ` <@!${perm.id}>`) : (usersDisabled += ` <@!${perm.id}>`);
 			}
 			// If role or users existed, add them to embed
-			if (rolesEnabled) em.addField('Roles Enabled', rolesEnabled, false);
-			if (rolesDisabled) em.addField('Roles Disabled', rolesDisabled, false);
-			if (usersEnabled) em.addField('Users Enabled', usersEnabled, false);
-			if (usersDisabled) em.addField('Users Disabled', usersDisabled, false);
+			if (rolesEnabled) response.addField('Roles Enabled', rolesEnabled, false);
+			if (rolesDisabled) response.addField('Roles Disabled', rolesDisabled, false);
+			if (usersEnabled) response.addField('Users Enabled', usersEnabled, false);
+			if (usersDisabled) response.addField('Users Disabled', usersDisabled, false);
 			
 		}
 		
 
 		interaction.reply({
-			embeds: [em],
-			ephemeral: false
-		})
+			embeds: [response],
+			ephemeral: true
+		});
+		return {embeds: [logMessage.addField('Success', `Permissions for \`${command_name}\` listed.`, false)]}
 	}
 }
