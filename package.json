@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node bot.js",
+    "start": "nodemon bot.js",
     "clean": "node ./scripts/clean-commands.js",
     "build": "node ./scripts/deploy-commands.js"
   },
@@ -19,5 +19,8 @@
     "dotenv": "^14.1.0",
     "mysql2": "^2.3.3",
     "sequelize": "^6.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
