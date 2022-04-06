@@ -18,11 +18,11 @@ module.exports = {
 		}
 		if (mentionable instanceof Role) {
 			command.permissions.remove({command: command.id, roles: mentionable.id})
-				.then(interaction.reply({content:`Permission for \`${command_name}\` has been removed from <@&${mentionable.id}>`, ephemeral: true}));
+				.then(interaction.reply({content:`Permission for \`${command_name}\` has been removed from <@&${mentionable.id}>`, ephemeral: false}));
 		}
 		else if (mentionable instanceof GuildMember) {
 			command.permissions.remove({command: command.id, users: mentionable.id})
-				.then(interaction.reply({content:`Permission for \`${command_name}\` has been removed from <@${mentionable.id}>`, ephemeral: true}));
+				.then(interaction.reply({content:`Permission for \`${command_name}\` has been removed from <@${mentionable.id}>`, ephemeral: false}));
 		}
 		else {
 			interaction.reply('Invalid arguments provided.');

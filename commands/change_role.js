@@ -19,12 +19,12 @@ module.exports = {
 		if (flag) {
 			// If the member already has the role, send a message back
 			if(target.roles.cache.find(r => r.id === role.id)) {
-				interaction.reply({content: `<@!${target.id}> already has that role!`, ephemeral: true});
+				interaction.reply({content: `<@!${target.id}> already has that role!`, ephemeral: false});
 			}
 			// Otherwise they need the role
 			else {
 				await target.roles.add(role);
-				interaction.reply({content: `<@!${target.id}> has been given the following role <@&${role.id}>`, ephemeral: true});
+				interaction.reply({content: `<@!${target.id}> has been given the following role <@&${role.id}>`, ephemeral: false});
 			}
 		}
 		// If the role is being removed
@@ -32,11 +32,11 @@ module.exports = {
 			// If the member has the role
 			if(target.roles.cache.find(r => r.id === role.id)) {
 				await target.roles.remove(role);
-				interaction.reply({content: `<@!${target.id}> has had the following role removed <@&${role.id}>`, ephemeral: true});
+				interaction.reply({content: `<@!${target.id}> has had the following role removed <@&${role.id}>`, ephemeral: false});
 			}
 			// The user doesn't have the role
 			else {
-				interaction.reply({content: `<@!${target.id}> doesn't have that role!`, ephemeral: true});
+				interaction.reply({content: `<@!${target.id}> doesn't have that role!`, ephemeral: false});
 			}
 		}
 

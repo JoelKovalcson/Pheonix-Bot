@@ -45,6 +45,6 @@ module.exports = {
 		}
 		
 		command.permissions.add({permissions: [perms]})
-			.then(interaction.reply({content:`Permission for \`${command_name}\` turned ${(perm_set) ? 'on' : 'off'} for ${ping}`, ephemeral: true}));
+			.then(interaction.reply({content:`Permission for \`${command_name}\` turned ${(perm_set) ? 'on' : 'off'} for ${ping}`, ephemeral: false}));
 	}
 }

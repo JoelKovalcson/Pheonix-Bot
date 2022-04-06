@@ -54,7 +54,8 @@ module.exports = {
 		
 
 		interaction.reply({
-			embeds: [em]
+			embeds: [em],
+			ephemeral: false
 		})
 	}
 }

@@ -14,14 +14,14 @@ module.exports = {
 		interaction.member.setNickname(nick)
 			.then(() => {
 				getVisitorRole(interaction.client.guilds.cache.get(interaction.guildId)).then((visitor_role) => {
-					interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: true});
+					interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: false});
 					interaction.member.roles.add(visitor_role);
 					return `<@${member.id}> has changed nickname to '${nick}'.`;
 				});
 			})
 			.catch(err => {
 				console.log(err);
-				interaction.reply({content:`An error occurred setting nickname to: ${nick}`, ephemeral: true});
+				interaction.reply({content:`An error occurred setting nickname to: ${nick}`, ephemeral: false});
 			});
 	}
 }
