@@ -1,4 +1,4 @@
-const {SlashCommandBuilder} = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Role, GuildMember, MessageEmbed } = require('discord.js');
 
 module.exports = {
