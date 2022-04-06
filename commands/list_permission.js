@@ -33,18 +33,23 @@ module.exports = {
 
 		// If permissions exist, fill out role & user restrictions
 		if (perms) {
-			let roles = '';
-			let users = '';
+			let rolesEnabled = '';
+			let rolesDisabled = '';
+			let usersEnabled = '';
+			let usersDisabled = '';
 			for (var perm of perms) {
 				if (perm.type == 'ROLE') {
-					if (perm.id == interaction.client.guilds.cache.get(interaction.guildId).roles.everyone.id) roles += ` @everyone`
-					else roles += ` <@&${perm.id}>`
+					if (perm.id == interaction.client.guilds.cache.get(interaction.guildId).roles.everyone.id) perm.permission ? (rolesEnabled += ` @everyone`) : (rolesDisabled += ` @everyone`);
+					else perm.permission ? (rolesEnabled += ` <@&${perm.id}>`) : (rolesDisabled += ` <@&${perm.id}>`);
 				}
-				else if (perm.type == 'USER') users += ` <@!${perm.id}>`;
+				else if (perm.type == 'USER') perm.permission ? (usersEnabled += ` <@!${perm.id}>`) : (usersDisabled += ` <@!${perm.id}>`);
 			}
 			// If role or users existed, add them to embed
-			if(roles) em.addField('Roles', roles, false);
-			if(users) em.addField('Users', users, false);
+			if (rolesEnabled) em.addField('Roles Enabled', rolesEnabled, false);
+			if (rolesDisabled) em.addField('Roles Disabled', rolesDisabled, false);
+			if (usersEnabled) em.addField('Users Enabled', usersEnabled, false);
+			if (usersDisabled) em.addField('Users Disabled', usersDisabled, false);
+			
 		}
 		
 
