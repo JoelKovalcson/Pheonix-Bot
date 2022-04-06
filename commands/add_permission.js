@@ -8,11 +8,11 @@ module.exports = {
 		.setDefaultPermission(true)
 		.addMentionableOption(option => option.setName('target').setDescription('The user or role').setRequired(true))
 		.addStringOption(option => option.setName('command').setDescription('The command to give use permission').setRequired(true))
-		.addBooleanOption(option => option.setName('perm').setDescription('Whether to give or revoke permission').setRequired(true)),
+		.addBooleanOption(option => option.setName('flag').setDescription('Whether to give or revoke permission').setRequired(true)),
 	async execute(interaction) {
 		const mentionable = interaction.options.getMentionable('target');
 		const command_name = interaction.options.getString('command');
-		const perm_set = interaction.options.getBoolean('perm');
+		const perm_set = interaction.options.getBoolean('flag');
 		const command = (await interaction.client.guilds.cache.get(interaction.guildId).commands.fetch()).find((command) => command.name === command_name);
 		let perms;
 		let ping;
