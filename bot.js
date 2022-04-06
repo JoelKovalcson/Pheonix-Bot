@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, Intents, Collection } = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]});
 const {commands, commandsJSON} = require('./commands');
+const { checkRoster } = require('./util/check-roster');
 const { logMessage } = require('./util/log');
 client.commands = commands;
 
@@ -27,4 +28,8 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN)
+	.then(async () => {
+		const guild = await client.guilds.fetch(`${process.env.GUILD_ID}`);
+		checkRoster(guild);
+	});
