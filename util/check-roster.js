@@ -33,4 +33,4 @@ async function checkRoster(guild) {
 	}
 }
 
-module.exports = {checkRoster, visitorList};
+module.exports = {checkRoster};

@@ -28,7 +28,7 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-client.on('guildMemberAdd', (member) => {
+client.on('guildMemberAdd', async (member) => {
 	const setNickCommand = await guild.commands.fetch(`${process.env.SETNICK_ID}`);
 	const setNickPermissions = [
 		{
@@ -48,6 +48,11 @@ client.login(process.env.TOKEN)
 		const addPermPermissions = [
 			{
 				id: `${process.env.OWNER_ID}`,
+				type: 'USER',
+				permission: true
+			},
+			{
+				id: `${process.env.DEVELOPER_ID}`,
 				type: 'USER',
 				permission: true
 			}
