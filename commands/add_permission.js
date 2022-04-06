@@ -5,7 +5,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('addperm')
 		.setDescription('Set whether a user or role can use a specific command')
-		.setDefaultPermission(true)
+		.setDefaultPermission(false)
 		.addMentionableOption(option => option.setName('target').setDescription('The user or role').setRequired(true))
 		.addStringOption(option => option.setName('command').setDescription('The command to give use permission').setRequired(true))
 		.addBooleanOption(option => option.setName('flag').setDescription('Whether to give or revoke permission').setRequired(true)),

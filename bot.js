@@ -30,6 +30,36 @@ client.on('interactionCreate', async interaction => {
 
 client.login(process.env.TOKEN)
 	.then(async () => {
+		// Get the guild and add perm command, and make sure the owner has the specified permission to add permissions
 		const guild = await client.guilds.fetch(`${process.env.GUILD_ID}`);
-		checkRoster(guild);
+		const addPermCommand = await guild.commands.fetch(`${process.env.ADDPERM_ID}`);
+		const addPermPermissions = [
+			{
+				id: `${process.env.OWNER_ID}`,
+				type: 'USER',
+				permission: true
+			}
+		];
+		await addPermCommand.permissions.add({permissions: addPermPermissions});
+		// Setup nickname changing permissions
+		const setNickCommand = await guild.commands.fetch(`${process.env.SETNICK_ID}`);
+		const setNickPermissions = [
+			{
+				id: `${process.env.VISITOR_ROLE_ID}`,
+				type: 'ROLE',
+				permission: false
+			},
+			{
+				id: `${process.env.MEMBER_ROLE_ID}`,
+				type: 'ROLE',
+				permission: false
+			},
+			{
+				id: `${process.env.LEADERSHIP_ROLE_ID}`,
+				type: 'ROLE',
+				permission: false
+			}
+		];
+		await setNickCommand.permissions.add({permissions: setNickPermissions});
+		//checkRoster(guild);
 	});

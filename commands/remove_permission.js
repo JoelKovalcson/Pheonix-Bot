@@ -5,7 +5,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('removeperm')
 		.setDescription('Set whether a user or role can use a specific command')
-		.setDefaultPermission(true)
+		.setDefaultPermission(false)
 		.addMentionableOption(option => option.setName('target').setDescription('The user or role').setRequired(true))
 		.addStringOption(option => option.setName('command').setDescription('The command to remove permission').setRequired(true)),
 	async execute(interaction) {

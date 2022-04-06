@@ -5,7 +5,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('listperm')
 		.setDescription('List all permissions for a command.')
-		.setDefaultPermission(true)
+		.setDefaultPermission(false)
 		.addStringOption(option => option.setName('command').setDescription('The command to list permissions').setRequired(true)),
 	async execute(interaction) {
 		const command_name = interaction.options.getString('command');
