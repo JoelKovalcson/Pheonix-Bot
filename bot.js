@@ -44,7 +44,7 @@ client.login(process.env.TOKEN)
 	.then(async () => {
 		// Get the guild and add perm command, and make sure the owner has the specified permission to add permissions
 		const guild = await client.guilds.fetch(`${process.env.GUILD_ID}`);
-		const addPermCommand = await guild.commands.fetch(`${process.env.ADDPERM_ID}`);
+		const addPermCommand = (await guild.commands.fetch()).find(command => command.name === 'addperm');
 		const addPermPermissions = [
 			{
 				id: `${process.env.OWNER_ID}`,
@@ -59,7 +59,7 @@ client.login(process.env.TOKEN)
 		];
 		await addPermCommand.permissions.add({permissions: addPermPermissions});
 		// Setup nickname changing permissions
-		const setNickCommand = await guild.commands.fetch(`${process.env.SETNICK_ID}`);
+		const setNickCommand = (await guild.commands.fetch()).find(command => command.name === 'setmynick');
 		const setNickPermissions = [
 			{
 				id: `${process.env.VISITOR_ROLE_ID}`,

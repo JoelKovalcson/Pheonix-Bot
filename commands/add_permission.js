@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Role, GuildMember, MessageEmbed } = require('discord.js');
+const { command_list } = require('../util/command_list');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -7,10 +8,16 @@ module.exports = {
 		.setDescription('Set whether a user or role can use a specific command')
 		.setDefaultPermission(false)
 		.addMentionableOption(option => option.setName('target').setDescription('The user or role').setRequired(true))
-		.addStringOption(option => option.setName('command').setDescription('The command to give use permission').setRequired(true))
+		.addStringOption(option => {
+			option.setName('command').setDescription('The command to give use permission').setRequired(true);
+			for(let command of command_list) {
+				option.addChoice(command, command);
+			}
+			return option;
+		})
 		.addBooleanOption(option => option.setName('flag').setDescription('Whether to give or revoke permission').setRequired(true)),
 	async execute(interaction) {
-		console.log(interaction);
+		
 		const mentionable = interaction.options.getMentionable('target');
 		const command_name = interaction.options.getString('command');
 		const perm_set = interaction.options.getBoolean('flag');

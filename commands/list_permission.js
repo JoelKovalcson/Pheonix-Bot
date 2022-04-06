@@ -1,12 +1,19 @@
 const {	SlashCommandBuilder } = require('@discordjs/builders');
 const {	MessageEmbed } = require('discord.js');
+const { command_list } = require('../util/command_list');
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('listperm')
 		.setDescription('List all permissions for a command.')
 		.setDefaultPermission(false)
-		.addStringOption(option => option.setName('command').setDescription('The command to list permissions').setRequired(true)),
+		.addStringOption(option => {
+			option.setName('command').setDescription('The command to list permissions').setRequired(true);
+			for(let command of command_list) {
+				option.addChoice(command, command);
+			}
+			return option;
+		}),
 	async execute(interaction) {
 		const command_name = interaction.options.getString('command');
 		// Might look into seeing if there's a better way of doing this? Feels clunky

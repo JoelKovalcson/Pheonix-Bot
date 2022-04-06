@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon bot.js",
     "clean": "node ./scripts/clean-commands.js",
-    "build": "node ./scripts/deploy-commands.js"
+    "build": "node ./scripts/deploy-commands.js",
+		"bot": "node bot.js"
   },
   "keywords": [],
   "author": "",
