@@ -7,7 +7,7 @@ module.exports = {
 		.setName('setmynick')
 		.setDescription('Sets the nickname of the user to the string provided')
 		.addStringOption(option => option.setName('nick').setDescription('The nickname for the user').setRequired(true))
-		.setDefaultPermission(true),
+		.setDefaultPermission(false),
 	async execute(interaction) {
 		const nick = interaction.options.getString('nick');
 

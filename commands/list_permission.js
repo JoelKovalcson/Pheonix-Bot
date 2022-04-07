@@ -18,7 +18,7 @@ module.exports = {
 		const command_name = interaction.options.getString('command');
 		// Might look into seeing if there's a better way of doing this? Feels clunky
 		const command = (await interaction.client.guilds.cache.get(interaction.guildId).commands.fetch()).find((command) => command.name === command_name);
-
+		
 		const logMessage = new MessageEmbed()
 			.setTitle('listperm')
 			.setDescription(`Used by: <@!${interaction.user.id}>`);

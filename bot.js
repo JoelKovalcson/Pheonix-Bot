@@ -29,15 +29,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.on('guildMemberAdd', async (member) => {
-	const setNickCommand = await guild.commands.fetch(`${process.env.SETNICK_ID}`);
-	const setNickPermissions = [
-		{
-			id: `${member.id}`,
-			type: 'USER',
-			permission: true
-		}
-	];
-	await setNickCommand.permissions.add({permissions: setNickPermissions});
+	
 });
 
 client.login(process.env.TOKEN)
@@ -62,19 +54,9 @@ client.login(process.env.TOKEN)
 		const setNickCommand = (await guild.commands.fetch()).find(command => command.name === 'setmynick');
 		const setNickPermissions = [
 			{
-				id: `${process.env.VISITOR_ROLE_ID}`,
+				id: `${process.env.LOCKED_NICKNAME_ID}`,
 				type: 'ROLE',
-				permission: false
-			},
-			{
-				id: `${process.env.MEMBER_ROLE_ID}`,
-				type: 'ROLE',
-				permission: false
-			},
-			{
-				id: `${process.env.LEADERSHIP_ROLE_ID}`,
-				type: 'ROLE',
-				permission: false
+				permission: true
 			}
 		];
 		await setNickCommand.permissions.add({permissions: setNickPermissions});
