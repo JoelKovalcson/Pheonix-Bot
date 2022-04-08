@@ -4,6 +4,7 @@ const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_M
 const {commands, commandsJSON} = require('./commands');
 const { checkRoster } = require('./util/check-roster');
 const { logMessage } = require('./util/log');
+const { readStorage, writeStorage, addVisitor, removeVisitor } = require('./util/storage');
 client.commands = commands;
 
 client.once('ready', () => {
@@ -28,8 +29,19 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
-client.on('guildMemberAdd', async (member) => {
-	
+client.on('guildMemberUpdate', async (oldMember, newMember) => {
+	const difference = oldMember.roles.cache.difference(newMember.roles.cache);
+	if (difference?.find(role => role.id == process.env.VISITOR_ROLE_ID)) {
+		// Visitor role was removed
+		if (oldMember.roles.cache.size > newMember.roles.cache.size) {
+			removeVisitor(newMember);
+		}
+		// Visitor role was added
+		else {
+			addVisitor(newMember);
+		}
+		await writeStorage(newMember.guild);
+	}
 });
 
 client.login(process.env.TOKEN)
@@ -60,5 +72,7 @@ client.login(process.env.TOKEN)
 			}
 		];
 		await setNickCommand.permissions.add({permissions: setNickPermissions});
-		// checkRoster(guild);
+		await readStorage(guild);
+		await checkRoster(guild);
+		await writeStorage(guild);
 	});
