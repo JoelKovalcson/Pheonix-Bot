@@ -10,6 +10,7 @@ const inactiveStorageName = "Inactive List";
 const inactiveMessages = [];
 
 async function readStorage(guild) {
+	console.log('Reading storage...');
 	const storageChannel = await guild.channels.fetch(`${process.env.STORAGE_CHANNEL_ID}`);
 	const messages = (await storageChannel.messages.fetch()).reverse();
 	// This currently assumes that this channel won't get filled with messages as the fetch gets up to 50 messages.
@@ -47,6 +48,7 @@ async function readStorage(guild) {
 			}
 		}
 	});
+	console.log('Storage read!');
 }
 
 function addInactive(member) {
@@ -57,6 +59,7 @@ function addInactive(member) {
 		id: member.id,
 		date: Math.floor(Date.now() / 1000)
 	});
+	console.log(`Added inactive: ${member.displayName}`);
 	return true;
 }
 
@@ -65,6 +68,7 @@ function removeInactive(member) {
 	if (foundUser < 0) return false;
 
 	inactiveList.splice(foundUser, 1);
+	console.log(`Removed inactive: ${member.displayName}`);
 	return true;
 }
 
@@ -76,6 +80,7 @@ function addVisitor(member) {
 		id: member.id,
 		date: Math.floor(Date.now() / 1000)
 	});
+	console.log(`Added visitor: ${member.displayName}`);
 	return true;
 }
 
@@ -84,10 +89,12 @@ function removeVisitor(member) {
 	if (foundUser < 0) return false;
 
 	visitorList.splice(foundUser, 1);
+	console.log(`Removed visitor: ${member.displayName}`);
 	return true;
 }
 
 async function writeStorage(guild) {
+	console.log('Writing Storage...');
 	const storageChannel = await guild.channels.fetch(`${process.env.STORAGE_CHANNEL_ID}`);
 	let curEmbed = null;
 	let messageNum = 0;
@@ -97,7 +104,12 @@ async function writeStorage(guild) {
 	let curMessage = null;
 	// Write all the visitor messages
 	for (i = 0; i < visitorList.length; i++) {
-		// Setup for every message, limiting to 60 users per message
+		if (i % 10 === 0) {
+			if (fieldStr) curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
+			blockNum = Math.floor(i/10);
+			fieldStr = '';
+		}
+		// Setup for every message, limiting to 50 users per message
 		if (i % 50 === 0) {
 			// Get the current message index
 			messageNum = Math.floor(i/50);
@@ -120,11 +132,7 @@ async function writeStorage(guild) {
 				visitorMessages.push(curMessage);
 			}
 		}
-		if (i % 10 === 0) {
-			if (fieldStr) curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
-			blockNum = Math.floor(i/10);
-			fieldStr = '';
-		}
+		
 		fieldStr += `\n<@!${visitorList[i].id}> has been a visitor since ${Formatters.time(visitorList[i].date, TimestampStyles.RelativeTime)}`
 	}
 	// Update the last message being used.
@@ -137,6 +145,11 @@ async function writeStorage(guild) {
 	curMessage = null;
 	// Write all the inactive messages
 	for (i = 0; i < inactiveList.length; i++) {
+		if (i % 10 === 0) {
+			if (fieldStr) curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
+			blockNum = Math.floor(i/10);
+			fieldStr = '';
+		}
 		// Setup for every message, limiting to 60 users per message
 		if (i % 50 === 0) {
 			// Get the current message index
@@ -160,11 +173,6 @@ async function writeStorage(guild) {
 				inactiveMessages.push(curMessage);
 			}
 		}
-		if (i % 10 === 0) {
-			if (fieldStr) curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
-			blockNum = Math.floor(i/10);
-			fieldStr = '';
-		}
 		fieldStr += `\n<@!${inactiveList[i].id}> has been inactive since ${Formatters.time(inactiveList[i].date, TimestampStyles.RelativeTime)}`
 	}
 	// Update the last message being used.
@@ -172,6 +180,7 @@ async function writeStorage(guild) {
 		curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
 		await curMessage.edit({embeds: [curEmbed]});
 	}
+	console.log('Storage updated!');
 }
 
 module.exports = {readStorage, writeStorage, addVisitor, removeVisitor, addInactive, removeInactive};

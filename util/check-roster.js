@@ -2,6 +2,7 @@ const { MessageEmbed } = require("discord.js");
 const { addVisitor, addInactive } = require("./storage");
 
 async function checkRoster(guild) {
+	console.log('Checking roster...');
 	const members = await guild.members.fetch();
 	const logEmbed = new MessageEmbed()
 		.setTitle('Roster Check')
@@ -19,6 +20,7 @@ async function checkRoster(guild) {
 			addInactive(member);
 		}
 	}
+	console.log('Roster checked!');
 }
 
 module.exports = {checkRoster};
