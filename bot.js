@@ -4,7 +4,7 @@ const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_M
 const {commands, commandsJSON} = require('./commands');
 const { checkRoster } = require('./util/check-roster');
 const { logMessage } = require('./util/log');
-const { readStorage, writeStorage, addVisitor, removeVisitor } = require('./util/storage');
+const { readStorage, writeStorage, addVisitor, removeVisitor, removeInactive, addInactive } = require('./util/storage');
 client.commands = commands;
 
 client.once('ready', () => {
@@ -39,6 +39,16 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 		// Visitor role was added
 		else {
 			addVisitor(newMember);
+		}
+		await writeStorage(newMember.guild);
+	}
+	else if (difference?.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
+		if (oldMember.roles.cache.size > newMember.roles.cache.size) {
+			removeInactive(newMember);
+		}
+		// Visitor role was added
+		else {
+			addInactive(newMember);
 		}
 		await writeStorage(newMember.guild);
 	}
