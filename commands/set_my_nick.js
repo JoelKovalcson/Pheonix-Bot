@@ -19,9 +19,10 @@ module.exports = {
 		interaction.member.setNickname(nick)
 			.then(() => {
 				getVisitorRole(interaction.client.guilds.cache.get(interaction.guildId)).then((visitor_role) => {
+					interaction.member.roles.remove(process.env.LOCKED_NICKNAME_ID);
 					interaction.member.roles.add(visitor_role);
 					interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: true});
-					return {embeds: [logMessage.addField('Success', `<@!${member.id}> has changed nickname to \`${nick}\`.`, false)]};
+					return {embeds: [logMessage.addField('Success', `<@!${interaction.member.id}> has changed nickname to \`${nick}\`.`, false)]};
 				});
 			})
 			.catch(err => {

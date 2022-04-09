@@ -40,7 +40,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 		else {
 			addVisitor(newMember);
 		}
-		await writeStorage(newMember.guild);
 	}
 	else if (difference?.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
 		// Inactive role was removed
@@ -51,7 +50,6 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 		else {
 			addInactive(newMember);
 		}
-		await writeStorage(newMember.guild);
 	}
 });
 
@@ -61,8 +59,6 @@ client.on('guildMemberRemove', async (member) => {
 		// Remove them from both
 		removeVisitor(member);
 		removeInactive(member);
-		// Write new storage
-		await writeStorage(member.guild);
 	}
 });
 
@@ -70,32 +66,11 @@ client.login(process.env.TOKEN)
 	.then(async () => {
 		// Get the guild and add perm command, and make sure the owner has the specified permission to add permissions
 		const guild = await client.guilds.fetch(`${process.env.GUILD_ID}`);
-		/* Don't need the commented code as perms are already set */
-		// const addPermCommand = (await guild.commands.fetch()).find(command => command.name === 'addperm');
-		// const addPermPermissions = [
-		// 	{
-		// 		id: `${process.env.OWNER_ID}`,
-		// 		type: 'USER',
-		// 		permission: true
-		// 	},
-		// 	{
-		// 		id: `${process.env.DEVELOPER_ID}`,
-		// 		type: 'USER',
-		// 		permission: true
-		// 	}
-		// ];
-		// await addPermCommand.permissions.add({permissions: addPermPermissions});
-		// // Setup nickname changing permissions
-		// const setNickCommand = (await guild.commands.fetch()).find(command => command.name === 'setmynick');
-		// const setNickPermissions = [
-		// 	{
-		// 		id: `${process.env.LOCKED_NICKNAME_ID}`,
-		// 		type: 'ROLE',
-		// 		permission: true
-		// 	}
-		// ];
-		// await setNickCommand.permissions.add({permissions: setNickPermissions});
+		
 		await readStorage(guild);
 		await checkRoster(guild);
 		await writeStorage(guild);
+		setInterval(async () => {
+			await writeStorage(guild);
+		}, 1000*60*5);
 	});
