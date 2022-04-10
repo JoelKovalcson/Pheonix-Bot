@@ -1,13 +1,10 @@
 const { MessageEmbed } = require("discord.js");
-const { addVisitor, addInactive } = require("./storage");
+const { addVisitor, addInactive, removeInactive } = require("./storage");
 
 async function checkRoster(guild) {
 	console.log('Checking roster...');
 	const members = await guild.members.fetch();
-	const logEmbed = new MessageEmbed()
-		.setTitle('Roster Check')
-		.setDescription('The following users have multiple roles they are not supposed to have');
-	//let newVisitor = false;
+	
 	for (let [id, member] of members) {
 		if (member.roles.cache.find(role => role.id === process.env.MEMBER_ROLE_ID)) {
 		}
@@ -17,7 +14,12 @@ async function checkRoster(guild) {
 			addVisitor(member);
 		}
 		if (member.roles.cache.find(role => role.id === process.env.INACTIVE_ROLE_ID)) {
-			addInactive(member);
+			if(member.roles.cache.find(role => role.id === process.env.ACTIVE_OVERRIDE_ID)) {
+				removeInactive(member);
+			}
+			else {
+				addInactive(member);
+			}
 		}
 	}
 	console.log('Roster checked!');

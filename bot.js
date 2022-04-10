@@ -1,10 +1,12 @@
 require('dotenv').config();
-const { Client, Intents, Collection } = require('discord.js');
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]});
-const {commands, commandsJSON} = require('./commands');
+const { Client, Intents } = require('discord.js');
+const { commands } = require('./commands');
 const { checkRoster } = require('./util/check-roster');
 const { logMessage } = require('./util/log');
 const { readStorage, writeStorage, addVisitor, removeVisitor, removeInactive, addInactive } = require('./util/storage');
+
+
+const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]});
 client.commands = commands;
 
 client.once('ready', () => {
@@ -46,9 +48,19 @@ client.on('guildMemberUpdate', async (oldMember, newMember) => {
 		if (oldMember.roles.cache.size > newMember.roles.cache.size) {
 			removeInactive(newMember);
 		}
-		// Inactive roll was added
-		else {
+		// Inactive roll was added, check for lack of override role
+		else if (oldMember.roles.cache.size < newMember.roles.cache.size && !newMember.roles.cache.find(role => role.id == process.env.ACTIVE_OVERRIDE_ID)) {
 			addInactive(newMember);
+		}
+	}
+	else if (difference?.find(role => role.id == process.env.ACTIVE_OVERRIDE_ID)) {
+		// Active override removed, check for inactive role as well 
+		if (oldMember.roles.cache.size > newMember.roles.cache.size && newMember.roles.cache.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
+			addInactive(newMember);
+		}
+		// It was given, so make sure they aren't on inactive list
+		else if (oldMember.roles.cache.size < newMember.roles.cache.size) {
+			removeInactive(oldMember);
 		}
 	}
 });
