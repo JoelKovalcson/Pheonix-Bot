@@ -7,7 +7,7 @@
     "start": "nodemon bot.js",
     "clean": "node ./scripts/clean-commands.js",
     "build": "node ./scripts/deploy-commands.js",
-		"bot": "node bot.js"
+    "bot": "node bot.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "discord.js": "^13.6.0",
     "dotenv": "^14.1.0",
     "mysql2": "^2.3.3",
+    "node-fetch": "^2.6.7",
     "sequelize": "^6.13.0"
   },
   "devDependencies": {

@@ -1,9 +1,11 @@
 require('dotenv').config();
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageEmbed } = require('discord.js');
 const { commands } = require('./commands');
 const { checkRoster } = require('./util/check-roster');
 const { logMessage } = require('./util/log');
 const { readStorage, writeStorage, addVisitor, removeVisitor, removeInactive, addInactive } = require('./util/storage');
+const { worldStateHandler } = require('./util/world-state');
+
 
 
 const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]});
@@ -31,36 +33,53 @@ client.on('interactionCreate', async interaction => {
 	}
 });
 
+client.on('userUpdate', async (oldUser, newUser) => {
+	if (oldUser.username != newUser.username) {
+		// Check if they are part of this guild
+		const member = client.guilds.cache.find(guild => guild.id == process.env.GUILD_ID).members.cache.find(member => member.id == newUser.id);
+		if (member) {
+			// Check if they had visitor/member/inactive roles
+			if (member.roles.cache.find(role => role.id == process.env.MEMBER_ROLE_ID || role.id == process.env.VISITOR_ROLE_ID || role.id == process.env.INACTIVE_ROLE_ID)) {
+				// If they didn't have a nickname, set their nickname to their old username
+				if (!member.nickname) await member.setNickname(oldUser.username);
+			}
+		}
+	}
+});
+
 client.on('guildMemberUpdate', async (oldMember, newMember) => {
+	// Check if there was a different in roles
 	const difference = oldMember.roles.cache.difference(newMember.roles.cache);
-	if (difference?.find(role => role.id == process.env.VISITOR_ROLE_ID)) {
-		// Visitor role was removed
-		if (oldMember.roles.cache.size > newMember.roles.cache.size) {
-			removeVisitor(newMember);
+	if (difference) {
+		if (difference.find(role => role.id == process.env.VISITOR_ROLE_ID)) {
+			// Visitor role was removed
+			if (oldMember.roles.cache.size > newMember.roles.cache.size) {
+				removeVisitor(newMember);
+			}
+			// Visitor role was added
+			else {
+				addVisitor(newMember);
+			}
 		}
-		// Visitor role was added
-		else {
-			addVisitor(newMember);
+		else if (difference.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
+			// Inactive role was removed
+			if (oldMember.roles.cache.size > newMember.roles.cache.size) {
+				removeInactive(newMember);
+			}
+			// Inactive roll was added, check for lack of override role
+			else if (oldMember.roles.cache.size < newMember.roles.cache.size && !newMember.roles.cache.find(role => role.id == process.env.ACTIVE_OVERRIDE_ID)) {
+				addInactive(newMember);
+			}
 		}
-	}
-	else if (difference?.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
-		// Inactive role was removed
-		if (oldMember.roles.cache.size > newMember.roles.cache.size) {
-			removeInactive(newMember);
-		}
-		// Inactive roll was added, check for lack of override role
-		else if (oldMember.roles.cache.size < newMember.roles.cache.size && !newMember.roles.cache.find(role => role.id == process.env.ACTIVE_OVERRIDE_ID)) {
-			addInactive(newMember);
-		}
-	}
-	else if (difference?.find(role => role.id == process.env.ACTIVE_OVERRIDE_ID)) {
-		// Active override removed, check for inactive role as well 
-		if (oldMember.roles.cache.size > newMember.roles.cache.size && newMember.roles.cache.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
-			addInactive(newMember);
-		}
-		// It was given, so make sure they aren't on inactive list
-		else if (oldMember.roles.cache.size < newMember.roles.cache.size) {
-			removeInactive(oldMember);
+		else if (difference.find(role => role.id == process.env.ACTIVE_OVERRIDE_ID)) {
+			// Active override removed, check for inactive role as well 
+			if (oldMember.roles.cache.size > newMember.roles.cache.size && newMember.roles.cache.find(role => role.id == process.env.INACTIVE_ROLE_ID)) {
+				addInactive(newMember);
+			}
+			// It was given, so make sure they aren't on inactive list
+			else if (oldMember.roles.cache.size < newMember.roles.cache.size) {
+				removeInactive(oldMember);
+			}
 		}
 	}
 });
@@ -85,4 +104,7 @@ client.login(process.env.TOKEN)
 		setInterval(async () => {
 			await writeStorage(guild);
 		}, 1000*60*5);
+
+		worldStateHandler(guild);
+		// guild.channels.cache.find(channel => channel.id == process.env.WORLD_STATE_CHANNEL_ID).send({embeds: [new MessageEmbed().setTitle('Current World State')]});
 	});
