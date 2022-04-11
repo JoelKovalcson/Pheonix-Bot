@@ -18,7 +18,7 @@ async function getState() {
 		return await getState();
 	}
 	// The other case we want to get a new worldstate is if the new one matches the existing one
-	if (prevWorldState && prevWorldState.timestamp == worldStateData.timestamp) {
+	if (prevWorldState && worldStateData && prevWorldState.timestamp == worldStateData.timestamp) {
 		console.log('Checking for new state again in 15...');
 		await new Promise(resolve => setTimeout(resolve, 15000));
 		return await getState();
