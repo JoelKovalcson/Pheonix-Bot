@@ -10,6 +10,33 @@ async function getState() {
 	try {
 		response = await fetch('https://api.warframestat.us/pc');
 		worldStateData = await response.json();
+
+		// The main case we want to get a new worldstate is if the new one matches the existing one
+		if (prevWorldState && worldStateData && prevWorldState.timestamp == worldStateData.timestamp) {
+			console.log('Checking for new state again in 15...');
+			await new Promise(resolve => setTimeout(resolve, 15000));
+			return await getState();
+		}
+		const timeList = [];
+		timeList.push(worldStateData.earthCycle.expiry);
+		timeList.push(worldStateData.cetusCycle.expiry);
+		timeList.push(worldStateData.cambionCycle.expiry);
+		timeList.push(worldStateData.vallisCycle.expiry);
+
+		let shortestExpiry = timeList[0];
+		for(let i = 1; i < timeList.length; i++) {
+			if (timeList[i] < shortestExpiry) shortestExpiry = timeList[i];
+		}
+
+		prevWorldState = {
+			timestamp: worldStateData.timestamp,
+			earthCycle: worldStateData.earthCycle,
+			cetusCycle: worldStateData.cetusCycle,
+			cambionCycle: worldStateData.cambionCycle,
+			vallisCycle: worldStateData.vallisCycle,
+			shortestExpiry
+		}
+		return prevWorldState;
 	}
 	catch (err) {
 		// Log the error and wait 60 seconds before attempting to get the state again
@@ -17,33 +44,6 @@ async function getState() {
 		await new Promise(resolve => setTimeout(resolve, 60*1000));
 		return await getState();
 	}
-	// The other case we want to get a new worldstate is if the new one matches the existing one
-	if (prevWorldState && worldStateData && prevWorldState.timestamp == worldStateData.timestamp) {
-		console.log('Checking for new state again in 15...');
-		await new Promise(resolve => setTimeout(resolve, 15000));
-		return await getState();
-	}
-	
-	const timeList = [];
-	timeList.push(worldStateData.earthCycle.expiry);
-	timeList.push(worldStateData.cetusCycle.expiry);
-	timeList.push(worldStateData.cambionCycle.expiry);
-	timeList.push(worldStateData.vallisCycle.expiry);
-
-	let shortestExpiry = timeList[0];
-	for(let i = 1; i < timeList.length; i++) {
-		if (timeList[i] < shortestExpiry) shortestExpiry = timeList[i];
-	}
-
-	prevWorldState = {
-		timestamp: worldStateData.timestamp,
-		earthCycle: worldStateData.earthCycle,
-		cetusCycle: worldStateData.cetusCycle,
-		cambionCycle: worldStateData.cambionCycle,
-		vallisCycle: worldStateData.vallisCycle,
-		shortestExpiry
-	}
-	return prevWorldState;
 }
 
 async function worldStateHandler(guild) {
