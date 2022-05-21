@@ -13,8 +13,8 @@ async function getState() {
 
 		// The main case we want to get a new worldstate is if the new one matches the existing one
 		if (prevWorldState && worldStateData && prevWorldState.timestamp == worldStateData.timestamp) {
-			console.log('Checking for new state again in 15...');
-			await new Promise(resolve => setTimeout(resolve, 15000));
+			console.log('Checking for new state again in 60...');
+			await new Promise(resolve => setTimeout(resolve, 60 * 1000));
 			return await getState();
 		}
 		const timeList = [];
