@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, Intents, MessageEmbed } = require('discord.js');
+const { Client, GatewayIntentBits, MessageEmbed } = require('discord.js');
 const { commands } = require('./commands');
 const { checkRoster } = require('./util/check-roster');
 const { logMessage } = require('./util/log');
@@ -8,7 +8,7 @@ const { worldStateHandler } = require('./util/world-state');
 
 
 
-const client = new Client({intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]});
+const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]});
 client.commands = commands;
 
 client.once('ready', () => {

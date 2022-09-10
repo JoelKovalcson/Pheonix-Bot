@@ -1,5 +1,4 @@
-const { TimestampStyles } = require("@discordjs/builders");
-const { MessageEmbed, Formatters } = require("discord.js");
+const { TimestampStyles, Embed, Formatters, EmbedBuilder } = require("discord.js");
 
 const visitorList = [];
 const visitorStorageName = "Visitor List";
@@ -114,7 +113,7 @@ async function writeStorage(guild) {
 	// Write all the visitor messages
 	for (i = 0; i < visitorList.length; i++) {
 		if (i % 10 === 0) {
-			if (fieldStr) curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
+			if (fieldStr) curEmbed.addFields({name: `Block ${blockNum+1}`, value: fieldStr, inline: false});
 			blockNum = Math.floor(i/10);
 			fieldStr = '';
 		}
@@ -127,20 +126,20 @@ async function writeStorage(guild) {
 				// Send previous message because it filled
 				if (curMessage) {
 					// Check to see if the messages are identical
-					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.fields)) visitorMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed]});
+					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) visitorMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed.data]});
 				}
 				curMessage = visitorMessages[messageNum];
 				// Get a new embed to use
-				curEmbed = new MessageEmbed().setTitle(visitorStorageName);
+				curEmbed = new EmbedBuilder().setTitle(visitorStorageName);
 			}
 			// If no message exists, create one
 			else {
 				if (curMessage) {
 					// Check to see if the messages are identical
-					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.fields)) visitorMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed]});
+					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) visitorMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed.data]});
 				}
 				curMessage = await storageChannel.send({embeds: [new MessageEmbed().setTitle(visitorStorageName)]});
-				curEmbed = new MessageEmbed().setTitle(visitorStorageName);
+				curEmbed = new EmbedBuilder().setTitle(visitorStorageName);
 				// Add new message to the visitor message array
 				visitorMessages.push(curMessage);
 			}
@@ -150,8 +149,9 @@ async function writeStorage(guild) {
 	}
 	// Update the last message being used.
 	if (i > 0) {
-		curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
-		if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.fields)) visitorMessages[messageNum] = await curMessage.edit({embeds: [curEmbed]});
+		curEmbed.ad
+		curEmbed.addFields({name: `Block ${blockNum+1}`, value: fieldStr, inline: false});
+		if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) visitorMessages[messageNum] = await curMessage.edit({embeds: [curEmbed.data]});
 	}
 	fieldStr = '';
 	curEmbed = null;
@@ -159,7 +159,7 @@ async function writeStorage(guild) {
 	// Write all the inactive messages
 	for (i = 0; i < inactiveList.length; i++) {
 		if (i % 10 === 0) {
-			if (fieldStr) curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
+			if (fieldStr) curEmbed.addFields({name: `Block ${blockNum+1}`, value: fieldStr, inline: false});
 			blockNum = Math.floor(i/10);
 			fieldStr = '';
 		}
@@ -171,19 +171,19 @@ async function writeStorage(guild) {
 			if (inactiveMessages.length > messageNum) {
 				// Send previous message because it filled
 				if (curMessage) {
-					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.fields)) inactiveMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed]});
+					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) inactiveMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed.data]});
 				}
 				curMessage = inactiveMessages[messageNum];
 				// If it does, get the current message and embed to use
-				curEmbed = new MessageEmbed().setTitle(inactiveStorageName);
+				curEmbed = new EmbedBuilder().setTitle(inactiveStorageName);
 			}
 			// If no message exists, create one
 			else {
 				if (curMessage) {
-					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.fields)) inactiveMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed]});
+					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) inactiveMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed.data]});
 				}
 				curMessage = await storageChannel.send({embeds: [new MessageEmbed().setTitle(inactiveStorageName)]});
-				curEmbed = new MessageEmbed().setTitle(inactiveStorageName);
+				curEmbed = new EmbedBuilder().setTitle(inactiveStorageName);
 				// Add new message to the visitor message array
 				inactiveMessages.push(curMessage);
 			}
@@ -193,8 +193,8 @@ async function writeStorage(guild) {
 	}
 	// Update the last message being used.
 	if (i > 0) {
-		curEmbed.addField(`Block ${blockNum+1}`, fieldStr, false);
-		if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.fields)) inactiveMessages[messageNum] = await curMessage.edit({embeds: [curEmbed]});
+		curEmbed.addFields({name: `Block ${blockNum+1}`, value: fieldStr, inline: false});
+		if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) inactiveMessages[messageNum] = await curMessage.edit({embeds: [curEmbed.data]});
 	}
 	console.log('Storage updated!');
 }
