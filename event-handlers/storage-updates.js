@@ -1,4 +1,6 @@
-const { removeVisitor, addVisitor, removeInactive, addInactive } = require("../util/storage");
+const { checkRoster } = require("../util/check-roster");
+const { removeVisitor, addVisitor, removeInactive, addInactive, readStorage, writeStorage } = require("../util/storage");
+const { worldStateHandler } = require("../util/world-state");
 
 const storageMemberUpdate = async (client, oldMember, newMember) => {
 	// Check if there was a different in roles
@@ -60,4 +62,17 @@ const storageMemberRemove = async (client, member) => {
 	}
 }
 
-module.exports = {storageMemberUpdate, storageUserUpdate, storageMemberRemove};
+const storageSetup = async (client) => {
+	const guild = await client.guilds.fetch(`${process.env.GUILD_ID}`);
+
+	await readStorage(guild);
+	await checkRoster(guild);
+	await writeStorage(guild);
+	setInterval(async () => {
+		await writeStorage(guild);
+	}, 1000*60*5);
+
+	await worldStateHandler(guild);
+}
+
+module.exports = {storageMemberUpdate, storageUserUpdate, storageMemberRemove, storageSetup};
