@@ -1,4 +1,4 @@
-const { TimestampStyles, Embed, Formatters, EmbedBuilder } = require("discord.js");
+const { TimestampStyles, time, EmbedBuilder } = require("discord.js");
 
 const visitorList = [];
 const visitorStorageName = "Visitor List";
@@ -145,7 +145,7 @@ async function writeStorage(guild) {
 			}
 		}
 		if (fieldStr) fieldStr += "\n";
-		fieldStr += `<@!${visitorList[i].id}> has been a visitor since ${Formatters.time(visitorList[i].date, TimestampStyles.RelativeTime)}`
+		fieldStr += `<@!${visitorList[i].id}> has been a visitor since ${time(visitorList[i].date, TimestampStyles.RelativeTime)}`
 	}
 	// Update the last message being used.
 	if (i > 0) {
@@ -189,7 +189,7 @@ async function writeStorage(guild) {
 			}
 		}
 		if (fieldStr) fieldStr += "\n";
-		fieldStr += `<@!${inactiveList[i].id}> has been inactive since ${Formatters.time(inactiveList[i].date, TimestampStyles.RelativeTime)}`
+		fieldStr += `<@!${inactiveList[i].id}> has been inactive since ${time(inactiveList[i].date, TimestampStyles.RelativeTime)}`
 	}
 	// Update the last message being used.
 	if (i > 0) {
