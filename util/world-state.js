@@ -1,4 +1,4 @@
-const { EmbedBuilder, time } = require('discord.js');
+const { EmbedBuilder, time, TimestampStyles } = require('discord.js');
 const fetch = require('node-fetch');
 
 let prevWorldState;
@@ -21,6 +21,7 @@ async function getState() {
 		timeList.push(worldStateData.cetusCycle.expiry);
 		timeList.push(worldStateData.cambionCycle.expiry);
 		timeList.push(worldStateData.vallisCycle.expiry);
+		timeList.push(worldStateData.zarimanCycle.expiry);
 
 		let shortestExpiry = timeList[0];
 		for(let i = 1; i < timeList.length; i++) {
@@ -33,6 +34,7 @@ async function getState() {
 			cetusCycle: worldStateData.cetusCycle,
 			cambionCycle: worldStateData.cambionCycle,
 			vallisCycle: worldStateData.vallisCycle,
+			zarimanCycle: worldStateData.zarimanCycle,
 			shortestExpiry
 		}
 		return prevWorldState;
@@ -52,10 +54,13 @@ async function worldStateHandler(guild) {
 	
 	const newEmbed = new EmbedBuilder().setTitle('Current World State');
 	newEmbed.setTimestamp(Date.parse(worldState.timestamp));
-	newEmbed.addFields({name: `__Earth__`, value: `*${worldState.earthCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.earthCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false});
-	newEmbed.addFields({name: `__Plains of Eidolon__`, value: `*${worldState.cetusCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cetusCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false});
-	newEmbed.addFields({name: `__Orb Vallis__`, value: `*${worldState.vallisCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.vallisCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false});
-	newEmbed.addFields({name: `__Cambion Drift__`, value: `*${worldState.cambionCycle.active.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cambionCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false});
+	newEmbed.addFields(
+		{name: `__Earth__`, value: `*${worldState.earthCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.earthCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+		{name: `__Plains of Eidolon__`, value: `*${worldState.cetusCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cetusCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+		{name: `__Orb Vallis__`, value: `*${worldState.vallisCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.vallisCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+		{name: `__Cambion Drift__`, value: `*${worldState.cambionCycle.active.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cambionCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+		{name: `__Zariman__`, value: `*${worldState.zarimanCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.zarimanCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false}
+	);
 
 	await updateMessage.edit({embeds: [newEmbed.data]});
 	console.log('World State updated!');
