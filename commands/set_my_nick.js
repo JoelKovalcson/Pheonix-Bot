@@ -21,7 +21,7 @@ module.exports = {
 
 			const visitor_role = await getVisitorRole(interaction.client.guilds.cache.get(interaction.guildId));
 			
-			interaction.member.roles.remove(process.env.LOCKED_NICKNAME_ID);
+			interaction.member.roles.remove(process.env.IGN_UNKNOWN_ID);
 			interaction.member.roles.add(visitor_role);
 			interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: true});
 			
