@@ -1,4 +1,4 @@
-const { TimestampStyles, time, EmbedBuilder } = require("discord.js");
+const { TimestampStyles, time, EmbedBuilder, ThreadAutoArchiveDuration } = require("discord.js");
 
 const visitorList = [];
 const visitorStorageName = "Visitor List";
@@ -57,6 +57,46 @@ async function readStorage(guild) {
 		}
 	});
 	console.log('Storage read!');
+	console.log(`${visitorList.length} Visitors`);
+	console.log(`${inactiveList.length} Inactives`);
+}
+
+async function cleanStorage(guild) {
+	console.log('Cleaning Storage...');
+	let toKick = [];
+	const curTime = new Date();
+	const members = await guild.members.fetch();
+	// Remove visitors from more than 5 days ago
+	curTime.setDate(curTime.getDate() - 5);
+	visitorList.forEach((visitor) => {
+		if (curTime > visitor.date * 1000) {
+			toKick.push(visitor);
+		}
+	});
+
+	// Kick all that were found
+	toKick.forEach(async (kick) => {
+		let member = members.find(member => member.id == kick.id);
+		await member.kick('Visitor has been here longer than 5 days.');
+		console.log(`Kicked ${kick.id}`);
+	});
+	toKick = [];
+
+	// Remove inactives from more than 30 days ago
+	curTime.setDate(curTime.getDate() - 25);
+	inactiveList.forEach((inactive) => {
+		if (curTime > inactive.date * 1000) {
+			toKick.push(inactive);
+		}
+	});
+	
+	// Kick all that were found
+	toKick.forEach(async (kick) => {
+		let member = members.find(member => member.id == kick.id);
+		await member.kick('Inactive has been here longer than 30 days.');
+		console.log(`Kicked ${kick.id}`);
+	});
+	console.log('Storage Cleaned!');
 }
 
 function addInactive(member) {
@@ -145,11 +185,10 @@ async function writeStorage(guild) {
 			}
 		}
 		if (fieldStr) fieldStr += "\n";
-		fieldStr += `<${visitorList[i].id}> has been a visitor since ${time(visitorList[i].date, TimestampStyles.RelativeTime)}`
+		fieldStr += `<@${visitorList[i].id}> has been a visitor since ${time(visitorList[i].date, TimestampStyles.RelativeTime)}`
 	}
 	// Update the last message being used.
 	if (i > 0) {
-		curEmbed.ad
 		curEmbed.addFields({name: `Block ${blockNum+1}`, value: fieldStr, inline: false});
 		if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) visitorMessages[messageNum] = await curMessage.edit({embeds: [curEmbed.data]});
 	}
@@ -199,4 +238,4 @@ async function writeStorage(guild) {
 	console.log('Storage updated!');
 }
 
-module.exports = {readStorage, writeStorage, addVisitor, removeVisitor, addInactive, removeInactive};
+module.exports = {readStorage, writeStorage, addVisitor, removeVisitor, addInactive, removeInactive, cleanStorage};
