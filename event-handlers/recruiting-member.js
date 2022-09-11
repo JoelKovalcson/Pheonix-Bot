@@ -49,7 +49,7 @@ const handleOpenJoinClan = async (client, interaction) => {
 					.setStyle(ButtonStyle.Danger)
 			);
 
-		await thread.send({content: `<@!${interaction.user.id}> has requested to join the clan <@&${headRecruiterRole.id}> <@&${recruiterRole.id}>\n\nFor Recruiter Use Only:`, components: [buttons]})
+		await thread.send({content: `<@${interaction.user.id}> has requested to join the clan <@&${headRecruiterRole.id}> <@&${recruiterRole.id}>\n\nFor Recruiter Use Only:`, components: [buttons]})
 		await interaction.reply({content: `Your request to join the clan has been sent to the recruiters.\n`
 															+ `They will contact you here when they are next available: <#${thread.id}>`, ephemeral: true});
 	}
@@ -111,7 +111,7 @@ const handleCloseJoin = async (client, interaction) => {
 
 	if (interaction.channel.archived) return;
 
-	await interaction.reply({content: `<@!${interaction.user.id}> has closed this thread.`});
+	await interaction.reply({content: `<@${interaction.user.id}> has closed this thread.`});
 	if (!interaction.channel.archived) interaction.channel.setLocked(true, 'Recruitment Finished');
 	if (!interaction.channel.archived) interaction.channel.setArchived(true, 'Recruitment Finished');
 }

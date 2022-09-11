@@ -16,20 +16,20 @@ module.exports = {
 		
 		const logMessage = new MessageEmbed()
 			.setTitle('changerole')
-			.setDescription(`Used by: <@!${interaction.user.id}>`);
+			.setDescription(`Used by: <@${interaction.user.id}>`);
 
 		// If the role is being added
 		if (flag) {
 			// If the member already has the role, send a message back
 			if(target.roles.cache.find(r => r.id === role.id)) {
-				interaction.reply({content: `<@!${target.id}> already has that role!`, ephemeral: true});
-				return {embeds: [logMessage.addField('Failed', `<@!${target.id}> already has the role <@&${role.id}>`, false)]};
+				interaction.reply({content: `<@${target.id}> already has that role!`, ephemeral: true});
+				return {embeds: [logMessage.addField('Failed', `<@${target.id}> already has the role <@&${role.id}>`, false)]};
 			}
 			// Otherwise they need the role
 			else {
 				await target.roles.add(role);
-				interaction.reply({content: `<@!${target.id}> has been given the following role <@&${role.id}>`, ephemeral: true});
-				return {embeds: [logMessage.addField('Success', `<@!${target.id}> has been given the role <@&${role.id}>`, false)]};
+				interaction.reply({content: `<@${target.id}> has been given the following role <@&${role.id}>`, ephemeral: true});
+				return {embeds: [logMessage.addField('Success', `<@${target.id}> has been given the role <@&${role.id}>`, false)]};
 			}
 		}
 		// If the role is being removed
@@ -37,13 +37,13 @@ module.exports = {
 			// If the member has the role
 			if(target.roles.cache.find(r => r.id === role.id)) {
 				await target.roles.remove(role);
-				interaction.reply({content: `<@!${target.id}> has had the following role removed <@&${role.id}>`, ephemeral: true});
-				return {embeds: [logMessage.addField('Success', `<@!${target.id}> has had the following role taken away <@&${role.id}>`, false)]};
+				interaction.reply({content: `<@${target.id}> has had the following role removed <@&${role.id}>`, ephemeral: true});
+				return {embeds: [logMessage.addField('Success', `<@${target.id}> has had the following role taken away <@&${role.id}>`, false)]};
 			}
 			// The user doesn't have the role
 			else {
-				interaction.reply({content: `<@!${target.id}> doesn't have that role!`, ephemeral: true});
-				return {embeds: [logMessage.addField('Failed', `<@!${target.id}> does not have the role <@&${role.id}>`, false)]};
+				interaction.reply({content: `<@${target.id}> doesn't have that role!`, ephemeral: true});
+				return {embeds: [logMessage.addField('Failed', `<@${target.id}> does not have the role <@&${role.id}>`, false)]};
 			}
 		}
 

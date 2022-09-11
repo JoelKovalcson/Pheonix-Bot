@@ -31,7 +31,12 @@ client.on('guildMemberRemove', async (member) => {
 	await EventHandlers.storageMemberRemove(client, member);
 });
 
+client.on('guildMemberAdd', async (member) => {
+	await EventHandlers.checkInviteCounts(member.guild, member);
+});
+
 client.login(process.env.TOKEN)
 	.then(async () => {
 		await EventHandlers.storageSetup(client);
+		await EventHandlers.checkInviteCounts(await client.guilds.fetch(`${process.env.GUILD_ID}`));
 	});

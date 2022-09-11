@@ -12,7 +12,7 @@ module.exports = {
 
 		const logMessage = new EmbedBuilder()
 			.setTitle('echo')
-			.setDescription(`Used by: <@!${interaction.user.id}>`);
+			.setDescription(`Used by: <@${interaction.user.id}>`);
 
 		const row = new ActionRowBuilder()
 			.addComponents(
@@ -30,11 +30,11 @@ module.exports = {
 			interaction.channel.send({content: `Thank you for setting your nickname!\nTo join the clan, click \`Join Clan\`. If you are a visitor interested in being a guest instead, click on \`Get Guest Role\`.`, components: [row]});
 			// if (msg) {
 			// 	interaction.reply({content: `Your message is: \`${msg}\``, components: [row], ephemeral: true});
-				logMessage.addFields({name: 'Success', value: `<@!${interaction.member.id}> has created a message in <#${interaction.channelId}>.`, inline: false});
+				logMessage.addFields({name: 'Success', value: `<@${interaction.member.id}> has created a message in <#${interaction.channelId}>.`, inline: false});
 			// }
 			// else {
 			// 	interaction.reply('No message was provided');
-			// 	logMessage.addFields({name: 'Failed', value: `<@!${interaction.member.id}> tried to created an empty message in <#${interaction.channelId}>.`, inline: false});
+			// 	logMessage.addFields({name: 'Failed', value: `<@${interaction.member.id}> tried to created an empty message in <#${interaction.channelId}>.`, inline: false});
 			// }
 		}
 		catch (err) {
@@ -42,7 +42,7 @@ module.exports = {
 
 			// interaction.reply({content: 'An error occurred using this command.', ephemeral: true});
 			
-			logMessage.addFields({name: 'Failed', value: `An error occurred when <@!${interaction.member.id}> tried to create a message in <#${interaction.channelId}>.`, inline: false});
+			logMessage.addFields({name: 'Failed', value: `An error occurred when <@${interaction.member.id}> tried to create a message in <#${interaction.channelId}>.`, inline: false});
 		}
 		return {embeds: [logMessage.data]};
 	}

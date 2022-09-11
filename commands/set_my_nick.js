@@ -13,7 +13,7 @@ module.exports = {
 
 		const logMessage = new EmbedBuilder()
 			.setTitle('setmynick')
-			.setDescription(`Used by: <@!${interaction.user.id}>`);
+			.setDescription(`Used by: <@${interaction.user.id}>`);
 
 		// This should work as long as the nickname isn't too long and the bot has perms higher than the user.
 		try {
@@ -26,7 +26,7 @@ module.exports = {
 			await interaction.member.roles.remove(ignUnknownRole);
 			await interaction.member.roles.add(visitorRole);
 			
-			logMessage.addFields({name: 'Success', value: `<@!${interaction.member.id}> has changed nickname to \`${nick}\`.`, inline: false});
+			logMessage.addFields({name: 'Success', value: `<@${interaction.member.id}> has changed nickname to \`${nick}\`.`, inline: false});
 			return {embeds: [logMessage.data]};
 		}
 		catch (err) {

@@ -27,7 +27,7 @@ module.exports = {
 
 		const logMessage = new MessageEmbed()
 			.setTitle('addperm')
-			.setDescription(`Used by: <@!${interaction.user.id}>`);
+			.setDescription(`Used by: <@${interaction.user.id}>`);
 
 		if(!command) {
 			interaction.reply({content: 'Command name not found.', ephemeral: true});

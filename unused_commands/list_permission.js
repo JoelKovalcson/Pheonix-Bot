@@ -21,7 +21,7 @@ module.exports = {
 		
 		const logMessage = new MessageEmbed()
 			.setTitle('listperm')
-			.setDescription(`Used by: <@!${interaction.user.id}>`);
+			.setDescription(`Used by: <@${interaction.user.id}>`);
 
 		if (!command) {
 			interaction.reply({content: 'Command name not found.', ephemeral: true});
@@ -53,7 +53,7 @@ module.exports = {
 					if (perm.id == interaction.client.guilds.cache.get(interaction.guildId).roles.everyone.id) perm.permission ? (rolesEnabled += ` @everyone`) : (rolesDisabled += ` @everyone`);
 					else perm.permission ? (rolesEnabled += ` <@&${perm.id}>`) : (rolesDisabled += ` <@&${perm.id}>`);
 				}
-				else if (perm.type == 'USER') perm.permission ? (usersEnabled += ` <@!${perm.id}>`) : (usersDisabled += ` <@!${perm.id}>`);
+				else if (perm.type == 'USER') perm.permission ? (usersEnabled += ` <@${perm.id}>`) : (usersDisabled += ` <@${perm.id}>`);
 			}
 			// If role or users existed, add them to embed
 			if (rolesEnabled) response.addField('Roles Enabled', rolesEnabled, false);

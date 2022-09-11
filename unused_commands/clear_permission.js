@@ -22,7 +22,7 @@ module.exports = {
 
 		const em = new MessageEmbed()
 			.setTitle('clearperm')
-			.setDescription(`Used by: <@!${interaction.user.id}>`);
+			.setDescription(`Used by: <!${interaction.user.id}>`);
 
 		if(!command) {
 			interaction.reply({content: 'Command name not found.', ephemeral: true});
@@ -35,8 +35,8 @@ module.exports = {
 		}
 		else if (mentionable instanceof GuildMember) {
 			await command.permissions.remove({command: command.id, users: mentionable.id});
-			interaction.reply({content:`Permission for \`${command_name}\` has been cleared for <@!${mentionable.id}>`, ephemeral: true});
-			return {embeds: [em.addField('Success', `Permission for \`${command_name}\` has been cleared for <@!${mentionable.id}>`, false)]};
+			interaction.reply({content:`Permission for \`${command_name}\` has been cleared for <@${mentionable.id}>`, ephemeral: true});
+			return {embeds: [em.addField('Success', `Permission for \`${command_name}\` has been cleared for <@${mentionable.id}>`, false)]};
 		}
 		else {
 			interaction.reply({content: 'Invalid arguments provided.', ephemeral: true});
