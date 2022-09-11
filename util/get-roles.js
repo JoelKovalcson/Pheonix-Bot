@@ -30,6 +30,10 @@ async function getGuestRole(guild) {
 	return guild.roles.cache.find(role => role.id == process.env.GUEST_ROLE_ID);
 }
 
+async function getIGNUnknownRole(guild) {
+	return guild.roles.cache.find(role => role.id == process.env.IGN_UNKNOWN_ID);
+}
+
 module.exports = { 
 	getVisitorRole,
 	getMemberRole,
@@ -38,5 +42,6 @@ module.exports = {
 	getHeadRecruiterRole, 
 	getRecruitRole, 
 	getAssociateRole,
-	getGuestRole
+	getGuestRole,
+	getIGNUnknownRole
 };

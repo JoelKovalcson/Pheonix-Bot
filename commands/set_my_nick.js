@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { Embed } = require('discord.js');
-const { getVisitorRole } = require('../util/get-roles');
+const { getVisitorRole, getIGNUnknownRole } = require('../util/get-roles');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -19,13 +19,14 @@ module.exports = {
 		try {
 			await interaction.member.setNickname(nick);
 
-			const visitor_role = await getVisitorRole(interaction.client.guilds.cache.get(interaction.guildId));
+			await interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: true});
+			const visitorRole = await getVisitorRole(interaction.guild);
+			const ignUnknownRole = await getIGNUnknownRole(interaction.guild);
 			
-			interaction.member.roles.remove(process.env.IGN_UNKNOWN_ID);
-			interaction.member.roles.add(visitor_role);
-			interaction.reply({content:`Successfully set nickname to: ${nick}`, ephemeral: true});
+			await interaction.member.roles.remove(ignUnknownRole);
+			await interaction.member.roles.add(visitorRole);
 			
-			logMessage.addField('Success', `<@!${interaction.member.id}> has changed nickname to \`${nick}\`.`, false);
+			logMessage.addFields({name: 'Success', value: `<@!${interaction.member.id}> has changed nickname to \`${nick}\`.`, inline: false});
 			return {embeds: [logMessage.data]};
 		}
 		catch (err) {
@@ -33,8 +34,8 @@ module.exports = {
 
 			interaction.reply({content:`An error occurred setting nickname to: ${nick}`, ephemeral: true});
 			
-			logMessage.addField('Failed', `Error setting nickname to ${nick}`, false);
-			return {embeds: [logMessage.data]}
+			logMessage.addFields({name: 'Failed', value: `Error setting nickname to ${nick}`, inline: false});
+			return {embeds: [logMessage.data]};
 		}
 	}
 }
