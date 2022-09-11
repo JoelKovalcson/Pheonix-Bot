@@ -1,8 +1,9 @@
-const { ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const { ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require("discord.js");
 const { getJoinClanChannel } = require("../util/get-channels");
 const { getRecruiterRole, getHeadRecruiterRole, getMemberRole, getLeadershipRole, getVisitorRole, getRecruitRole, getAssociateRole, getGuestRole } = require("../util/get-roles");
+const { logMessage } = require("../util/log");
 
-const handleOpenJoinClan = async (client, interaction) => {
+const handleStartJoinClan = async (client, interaction) => {
 	let roles = interaction.member.roles.cache;
 	// Make sure leadership or members do not press this
 	if (roles.find(role => role.id == process.env.LEADERSHIP_ROLE_ID || role.id == process.env.MEMBER_ROLE_ID)) {
@@ -67,8 +68,13 @@ const handleJoinClan = async (client, interaction) => {
 		return;
 	}
 
+	const logMessage = new EmbedBuilder()
+		.setTitle('Join Clan')
+		.setDescription(`Used by: <@${interaction.user.id}>`);
 	// if it is a recruiter or leadership, remove Visitor, give them Recruit and Member
 	try {
+
+
 		let member = await interaction.guild.members.fetch(interaction.customId.split(':')[1]);
 		let memberRole = await getMemberRole(interaction.guild);
 		let recruitRole = await getRecruitRole(interaction.guild);
@@ -88,11 +94,14 @@ const handleJoinClan = async (client, interaction) => {
 		if (addRoles.length) await member.roles.add(addRoles);
 		if (removeRoles.length) await member.roles.remove(removeRoles);
 
+		logMessage.addFields({name: 'Success', value: `<@${member.id}> has joined the clan!`, inline: false});
+
 		await interaction.reply({content: 'User roles should now be setup! Please verify before closing this thread.', ephemeral: true});
-	}
-	catch (err) {
+	} catch (err) {
+		logMessage.addFields({name: 'Failed', value: `There were problems setting proper roles for <@${member.id}>.`, inline: false});
 		await interaction.reply({content: 'That user is no longer in the server, or another error occurred.', ephemeral: true});
 	}
+	return {embeds: [logMessage.data]}
 }
 
 const handleCloseJoin = async (client, interaction) => {
@@ -147,17 +156,22 @@ const handleGuestRole = async (client, interaction) => {
 }
 
 const handleRecruitingButtons = async (client, interaction) => {
-	if (interaction.customId === 'startJoin') {
-		await handleOpenJoinClan(client, interaction);
-	}
-	else if (interaction.customId === 'guestRole') {
-		await handleGuestRole(client, interaction);
-	}
-	else if (interaction.customId.startsWith('joinClan:')) {
-		await handleJoinClan(client, interaction);
-	}
-	else if (interaction.customId === 'closeJoin') {
-		await handleCloseJoin(client, interaction);
+	try {
+		if (interaction.customId === 'startJoin') {
+			await handleStartJoinClan(client, interaction);
+		}
+		else if (interaction.customId === 'guestRole') {
+			await handleGuestRole(client, interaction);
+		}
+		else if (interaction.customId.startsWith('joinClan:')) {
+			let response = await handleJoinClan(client, interaction);
+			logMessage(interaction.guild, response, 'join');
+		}
+		else if (interaction.customId === 'closeJoin') {
+			await handleCloseJoin(client, interaction);
+		}
+	} catch (err) {
+		console.log(err);
 	}
 }
 

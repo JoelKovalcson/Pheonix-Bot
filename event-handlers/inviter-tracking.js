@@ -13,7 +13,7 @@ const inviteTable = {
 var inviteCounts = {};
 
 const logInvites = async (inviteCode, member) => {
-	logMessage(member.guild, {content: `<@${member.id}> has joined with <@${inviteTable[inviteCode]}> invite code: \`${inviteCode}\``});
+	logMessage(member.guild, {content: `<@${member.id}> has joined with <@${inviteTable[inviteCode]}> invite code: \`${inviteCode}\``}, 'invite');
 }
 
 const checkInviteCounts = async (guild, member = null) => {

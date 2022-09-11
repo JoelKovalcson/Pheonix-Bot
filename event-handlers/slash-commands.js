@@ -8,7 +8,7 @@ const handleSlashCommands = async (client, interaction) => {
 	try {
 		response = await command.execute(interaction);
 		if (response) {
-			logMessage(interaction.guild, response);
+			logMessage(interaction.guild, response, 'member');
 		}
 	} catch (err) {
 		console.error(err);
