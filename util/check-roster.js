@@ -4,23 +4,28 @@ async function checkRoster(guild) {
 	console.log('Checking roster...');
 	const members = await guild.members.fetch();
 	
-	for (let [id, member] of members) {
-		if (member.roles.cache.find(role => role.id === process.env.MEMBER_ROLE_ID)) {
-		}
-		if (member.roles.cache.find(role => role.id === process.env.LEADERSHIP_ROLE_ID)) {
-		}
-		if (member.roles.cache.find(role => role.id === process.env.VISITOR_ROLE_ID)) {
-			addVisitor(member);
-		}
-		if (member.roles.cache.find(role => role.id === process.env.INACTIVE_ROLE_ID)) {
-			if(member.roles.cache.find(role => role.id === process.env.ACTIVE_OVERRIDE_ID)) {
-				removeInactive(member);
+	members.forEach((member, id) => {
+		let isVisitor = undefined;
+		let isInactive = undefined;
+		member.roles.cache.forEach((role, id) => {
+			// If they are a visitor
+			if (id == process.env.VISITOR_ROLE_ID) {
+				isVisitor = true;
 			}
-			else {
-				addInactive(member);
+			// If they are inactive and do not have override
+			else if (id == process.env.INACTIVE_ROLE_ID && isInactive === undefined ) {
+				isInactive = true;
 			}
-		}
-	}
+			// If they have active override
+			else if (id == process.env.ACTIVE_OVERRIDE_ID) {
+				isInactive = false;
+			}
+		});
+
+		if (isVisitor) addVisitor(member);
+		if (isInactive) addInactive(member);
+		else removeInactive(member);
+	});
 	console.log('Roster checked!');
 }
 

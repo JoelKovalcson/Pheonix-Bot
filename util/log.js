@@ -5,17 +5,17 @@ async function logMessage(guild, message, type = null) {
 		case 'join':
 		case 'member':
 			getMemberLogChannel(guild).then((channel) => {
-				channel.send({...message});
+				if (channel) channel.send({...message});
 			});
 			break;
 		case 'invite':
 			getInviteLogChannel(guild).then((channel) => {
-				channel.send({...message});
+				if (channel) channel.send({...message});
 			});
 			break;
 		default:
 			getLogChannel(guild).then((channel) => {
-				channel.send({...message});
+				if (channel) channel.send({...message});
 			});
 			break;
 	}

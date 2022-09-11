@@ -52,15 +52,16 @@ async function worldStateHandler(guild) {
 	const worldState = await getState();
 	const updateMessage = await guild.channels.cache.find(channel => channel.id == process.env.WORLD_STATE_CHANNEL_ID).messages.fetch(process.env.WORLD_STATE_MESSAGE_ID);
 	
-	const newEmbed = new EmbedBuilder().setTitle('Current World State');
-	newEmbed.setTimestamp(Date.parse(worldState.timestamp));
-	newEmbed.addFields(
-		{name: `__Earth__`, value: `*${worldState.earthCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.earthCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
-		{name: `__Plains of Eidolon__`, value: `*${worldState.cetusCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cetusCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
-		{name: `__Orb Vallis__`, value: `*${worldState.vallisCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.vallisCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
-		{name: `__Cambion Drift__`, value: `*${worldState.cambionCycle.active.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cambionCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
-		{name: `__Zariman__`, value: `*${worldState.zarimanCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.zarimanCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false}
-	);
+	const newEmbed = new EmbedBuilder()
+		.setTitle('Current World State')
+		.setTimestamp(Date.parse(worldState.timestamp))
+		.addFields(
+			{name: `__Earth__`, value: `*${worldState.earthCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.earthCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+			{name: `__Plains of Eidolon__`, value: `*${worldState.cetusCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cetusCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+			{name: `__Orb Vallis__`, value: `*${worldState.vallisCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.vallisCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+			{name: `__Cambion Drift__`, value: `*${worldState.cambionCycle.active.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.cambionCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false},
+			{name: `__Zariman__`, value: `*${worldState.zarimanCycle.state.toUpperCase()}* until ${time(Math.floor(Date.parse(worldState.zarimanCycle.expiry) / 1000), TimestampStyles.ShortTime)}`, inline: false}
+		);
 
 	await updateMessage.edit({embeds: [newEmbed.data]});
 	console.log('World State updated!');

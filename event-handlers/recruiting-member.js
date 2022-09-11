@@ -1,6 +1,6 @@
 const { ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require("discord.js");
 const { getJoinClanChannel } = require("../util/get-channels");
-const { getRecruiterRole, getHeadRecruiterRole, getMemberRole, getLeadershipRole, getVisitorRole, getRecruitRole, getAssociateRole, getGuestRole } = require("../util/get-roles");
+const { getRecruiterRole, getHeadRecruiterRole, getMemberRole, getLeadershipRole, getVisitorRole, getRecruitRole, getAssociateRole, getGuestRole, getInactiveRole } = require("../util/get-roles");
 const { logMessage } = require("../util/log");
 
 const handleStartJoinClan = async (client, interaction) => {
@@ -71,22 +71,22 @@ const handleJoinClan = async (client, interaction) => {
 	const logMessage = new EmbedBuilder()
 		.setTitle('Join Clan')
 		.setDescription(`Used by: <@${interaction.user.id}>`);
-	// if it is a recruiter or leadership, remove Visitor, give them Recruit and Member
+	// If it is a recruiter or leadership, remove Visitor, give them Recruit and Member
 	try {
-
-
 		let member = await interaction.guild.members.fetch(interaction.customId.split(':')[1]);
 		let memberRole = await getMemberRole(interaction.guild);
 		let recruitRole = await getRecruitRole(interaction.guild);
 		let visitorRole = await getVisitorRole(interaction.guild);
 		let associateRole = await getAssociateRole(interaction.guild);
 		let guestRole = await getGuestRole(interaction.guild);
+		let inactiveRole = await getInactiveRole(interaction.guild);
 		let removeRoles = [];
 		let addRoles = [];
 		// Check for roles to add
 		if (!member.roles.cache.has(memberRole.id)) addRoles.push(memberRole);
 		if (!member.roles.cache.has(recruitRole.id)) addRoles.push(recruitRole);
 		// Check for roles to remove
+		if (member.roles.cache.has(inactiveRole)) removeRoles.push(inactiveRole);
 		if (member.roles.cache.has(visitorRole.id)) removeRoles.push(visitorRole);
 		if (member.roles.cache.has(associateRole.id)) removeRoles.push(associateRole);
 		if (member.roles.cache.has(guestRole.id)) removeRoles.push(guestRole);
@@ -109,15 +109,13 @@ const handleCloseJoin = async (client, interaction) => {
 	let recruiterRole = await getRecruiterRole(interaction.guild);
 	let leadershipRole = await getLeadershipRole(interaction.guild);
 	
-	// Don't try to send anything if the channel is archived.
-	
-
 	// If someone that is not a recruiter or leadership clicks the button, fuss at them
 	if (!interaction.member.roles.cache.hasAny(headRecruiterRole.id, recruiterRole.id, leadershipRole.id)) {
 		interaction.reply({content: 'You are not a recruiter!', ephemeral: true});
 		return;
 	}
 
+	// Don't try to send anything if the channel is archived.
 	if (interaction.channel.archived) return;
 
 	await interaction.reply({content: `<@${interaction.user.id}> has closed this thread.`});
@@ -127,9 +125,10 @@ const handleCloseJoin = async (client, interaction) => {
 
 const handleGuestRole = async (client, interaction) => {
 	let visitorRole = await getVisitorRole(interaction.guild);
+	let inactiveRole = await getInactiveRole(interaction.guild);
 	let roles = interaction.member.roles;
 
-	if (!roles.cache.has(visitorRole.id)) {
+	if (!roles.cache.hasAny(visitorRole.id, inactiveRole.id)) {
 		interaction.reply({content: 'You are not a visitor!', ephemeral: true});
 		return;
 	}
@@ -150,8 +149,15 @@ const handleGuestRole = async (client, interaction) => {
 		return;
 	}
 
-	roles.add(guestRole);
-	roles.remove(visitorRole);
+	let addRoles = [];
+	let removeRoles = [];
+
+	if (!roles.cache.has(guestRole.id)) addRoles.push(guestRole);
+	if (roles.cache.has(visitorRole.id)) removeRoles.push(visitorRole);
+	if (roles.cache.has(inactiveRole.id)) removeRoles.push(inactiveRole);
+
+	if (addRoles.length) roles.add(addRoles);
+	if (removeRoles.length) roles.remove(removeRoles);
 	interaction.reply({content: 'You have been given the Guest role!', ephemeral: true});
 }
 
