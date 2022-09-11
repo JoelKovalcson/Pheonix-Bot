@@ -1,4 +1,3 @@
-const { MessageEmbed } = require("discord.js");
 const { addVisitor, addInactive, removeInactive } = require("./storage");
 
 async function checkRoster(guild) {
