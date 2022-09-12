@@ -1,4 +1,4 @@
-const { ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } = require("discord.js");
+const { ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Colors } = require("discord.js");
 const { getJoinClanChannel } = require("../util/get-channels");
 const { getRecruiterRole, getHeadRecruiterRole, getMemberRole, getLeadershipRole, getVisitorRole, getRecruitRole, getAssociateRole, getGuestRole, getInactiveRole } = require("../util/get-roles");
 const { logMessage } = require("../util/log");
@@ -50,7 +50,30 @@ const handleStartJoinClan = async (client, interaction) => {
 					.setStyle(ButtonStyle.Danger)
 			);
 
-		await thread.send({content: `<@${interaction.user.id}> has requested to join the clan <@&${headRecruiterRole.id}> <@&${recruiterRole.id}>\n\nFor Recruiter Use Only:`, components: [buttons]})
+		const msgEm = new EmbedBuilder()
+			.setTitle('Thanks for applying!')
+			.setDescription('Our recruiters have been notified and will be with you when they are next available.')
+			.setColor(Colors.DarkOrange)
+			.setThumbnail('https://cdn.discordapp.com/attachments/836119123153911842/1018227601174708325/Phoenix_2.png')
+			.addFields(
+				{
+					name: 'Recommended Steps',
+					value: '\`1.\` Make sure you are not currently in a clan so a recruiter can invite you.'
+							 + '\n\`2.\` A recruiter will send you an invite when they are available.'
+							 + '\n\`3.\` Accept the invitation and state that you have joined the clan in this thread.'
+							 + '\n\`4.\` A recruiter will set your roles and you are good to go!'
+							 + '\n\nNote: The buttons below are for Recruiter use only.',
+					inline: true
+				},
+				{
+					name: 'Questions',
+					value: 'If you have any questions during this process, do not hesitate to ask.',
+					inline: true
+				}
+			)
+
+		await thread.send({content: `<@${interaction.user.id}> has requested to join the clan <@&${headRecruiterRole.id}> <@&${recruiterRole.id}>`});
+		await thread.send({embeds: [msgEm.data],  components: [buttons]})
 		await interaction.reply({content: `Your request to join the clan has been sent to the recruiters.\n`
 															+ `They will contact you here when they are next available: <#${thread.id}>`, ephemeral: true});
 	}
