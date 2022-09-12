@@ -15,7 +15,9 @@ const inviteTable = {
 var inviteCounts = {};
 
 const logInvites = async (inviteCode, member) => {
-
+	// Edge case for other invites
+	if (inviteTable[inviteCode] === undefined) return;
+	
 	const msgEm = new EmbedBuilder()
 		.setTitle('User Joined Via Invite')
 		.setFields(
