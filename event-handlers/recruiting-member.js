@@ -152,7 +152,7 @@ const handleGuestRole = async (client, interaction) => {
 	let roles = interaction.member.roles;
 
 	if (!roles.cache.hasAny(visitorRole.id, inactiveRole.id)) {
-		interaction.reply({content: 'You are not a visitor!', ephemeral: true});
+		await interaction.reply({content: 'You are not a visitor!', ephemeral: true});
 		return;
 	}
 
@@ -160,7 +160,7 @@ const handleGuestRole = async (client, interaction) => {
 	let associateRole = await getAssociateRole(interaction.guild);
 
 	if (roles.cache.hasAny(associateRole.id, guestRole.id)) {
-		interaction.reply({content: 'You already have a guest role!', ephemeral: true});
+		await interaction.reply({content: 'You already have a guest role!', ephemeral: true});
 		return;
 	}
 
@@ -168,7 +168,7 @@ const handleGuestRole = async (client, interaction) => {
 	let leadershipRole = await getLeadershipRole(interaction.guild);
 
 	if (roles.cache.hasAny(memberRole.id, leadershipRole.id)) {
-		interaction.reply({content: 'You are already in the clan, you do not need the guest role!', ephemeral: true});
+		await interaction.reply({content: 'You are already in the clan, you do not need the guest role!', ephemeral: true});
 		return;
 	}
 
@@ -179,9 +179,9 @@ const handleGuestRole = async (client, interaction) => {
 	if (roles.cache.has(visitorRole.id)) removeRoles.push(visitorRole);
 	if (roles.cache.has(inactiveRole.id)) removeRoles.push(inactiveRole);
 
-	if (addRoles.length) roles.add(addRoles);
-	if (removeRoles.length) roles.remove(removeRoles);
-	interaction.reply({content: 'You have been given the Guest role!', ephemeral: true});
+	if (addRoles.length) await roles.add(addRoles);
+	if (removeRoles.length) await roles.remove(removeRoles);
+	await interaction.reply({content: 'You have been given the Guest role!', ephemeral: true});
 }
 
 const handleRecruitingButtons = async (client, interaction) => {
