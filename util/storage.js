@@ -9,7 +9,7 @@ const inactiveStorageName = "Inactive List";
 const inactiveMessages = [];
 
 async function readStorage(guild) {
-	console.log('Reading storage...');
+	console.log('\x1b[36mReading storage...\x1b[0m');
 	await guild.members.fetch();
 	const storageChannel = await guild.channels.fetch(`${process.env.STORAGE_CHANNEL_ID}`);
 	const messages = (await storageChannel.messages.fetch()).reverse();
@@ -32,7 +32,7 @@ async function readStorage(guild) {
 					const id = userInfo[0].match(/(\d+)/)[0];
 					const date = userInfo[userInfo.length-1];
 					if (!guild.members.cache.has(id)) {
-						console.log(`User ${id} not found, removing from cache.`);
+						console.log(`\x1b[33mUser ${id} not found, removing from cache.\x1b[0m`);
 						continue;
 					}
 					// Add them to the visitor list
@@ -56,13 +56,13 @@ async function readStorage(guild) {
 			}
 		}
 	});
-	console.log('Storage read!');
-	console.log(`${visitorList.length} Visitors`);
-	console.log(`${inactiveList.length} Inactives`);
+	console.log('\x1b[32mStorage read!\x1b[0m');
+	console.log(`\x1b[34m${visitorList.length} Visitors\x1b[0m`);
+	console.log(`\x1b[35m${inactiveList.length} Inactives\x1b[0m`);
 }
 
 async function cleanStorage(guild) {
-	console.log('Cleaning Storage...');
+	console.log('\x1b[36mCleaning Storage...\x1b[0m');
 	let toKick = [];
 	const curTime = new Date();
 	const members = await guild.members.fetch();
@@ -78,7 +78,7 @@ async function cleanStorage(guild) {
 	toKick.forEach(async (kick) => {
 		let member = members.find(member => member.id == kick.id);
 		await member.kick('Visitor has been here longer than 5 days.');
-		console.log(`Kicked ${kick.id}`);
+		console.log(`\x1b[33mKicked ${kick.id}\x1b[0m`);
 	});
 	toKick = [];
 
@@ -94,9 +94,9 @@ async function cleanStorage(guild) {
 	toKick.forEach(async (kick) => {
 		let member = members.find(member => member.id == kick.id);
 		await member.kick('Inactive has been here longer than 30 days.');
-		console.log(`Kicked ${kick.id}`);
+		console.log(`\x1b[33mKicked ${kick.id}\x1b[0m`);
 	});
-	console.log('Storage Cleaned!');
+	console.log('\x1b[32mStorage Cleaned!\x1b[0m');
 }
 
 function addInactive(member) {
@@ -107,7 +107,7 @@ function addInactive(member) {
 		id: member.id,
 		date: Math.floor(Date.now() / 1000)
 	});
-	console.log(`Added inactive: ${member.displayName}`);
+	console.log(`\x1b[33mAdded inactive: ${member.displayName}\x1b[0m`);
 	return true;
 }
 
@@ -116,7 +116,7 @@ function removeInactive(member) {
 	if (foundUser < 0) return false;
 
 	inactiveList.splice(foundUser, 1);
-	console.log(`Removed inactive: ${member.displayName}`);
+	console.log(`\x1b[33mRemoved inactive: ${member.displayName}\x1b[0m`);
 	return true;
 }
 
@@ -128,7 +128,7 @@ function addVisitor(member) {
 		id: member.id,
 		date: Math.floor(Date.now() / 1000)
 	});
-	console.log(`Added visitor: ${member.displayName}`);
+	console.log(`\x1b[33mAdded visitor: ${member.displayName}\x1b[0m`);
 	return true;
 }
 
@@ -137,12 +137,12 @@ function removeVisitor(member) {
 	if (foundUser < 0) return false;
 
 	visitorList.splice(foundUser, 1);
-	console.log(`Removed visitor: ${member.displayName}`);
+	console.log(`\x1b[33mRemoved visitor: ${member.displayName}\x1b[0m`);
 	return true;
 }
 
 async function writeStorage(guild) {
-	console.log('Writing Storage...');
+	console.log('\x1b[36mWriting Storage...\x1b[0m');
 	const storageChannel = await guild.channels.fetch(`${process.env.STORAGE_CHANNEL_ID}`);
 	let curEmbed = null;
 	let messageNum = 0;
@@ -235,7 +235,7 @@ async function writeStorage(guild) {
 		curEmbed.addFields({name: `Block ${blockNum+1}`, value: fieldStr, inline: false});
 		if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) inactiveMessages[messageNum] = await curMessage.edit({embeds: [curEmbed.data]});
 	}
-	console.log('Storage updated!');
+	console.log('\x1b[32mStorage updated!\x1b[0m');
 }
 
 module.exports = {readStorage, writeStorage, addVisitor, removeVisitor, addInactive, removeInactive, cleanStorage};

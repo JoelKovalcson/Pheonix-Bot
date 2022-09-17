@@ -200,7 +200,7 @@ const handleRecruitingButtons = async (client, interaction) => {
 			await handleCloseJoin(client, interaction);
 		}
 	} catch (err) {
-		console.log(err);
+		console.log(`\x1b[31m${err}\x1b[0m`);
 	}
 }
 

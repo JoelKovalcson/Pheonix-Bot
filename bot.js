@@ -7,7 +7,7 @@ const client = new Client({intents: [GatewayIntentBits.Guilds, GatewayIntentBits
 client.commands = commands;
 
 client.once('ready', () => {
-	console.log('Bot Ready!');
+	console.log('\x1b[32mBot Ready!\x1b[0m');
 });
 
 client.on('interactionCreate', async interaction => {

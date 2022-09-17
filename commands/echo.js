@@ -67,7 +67,7 @@ module.exports = {
 			// }
 		}
 		catch (err) {
-			console.log(err);
+			console.log(`\x1b[31m${err}\x1b[0m`);
 
 			// interaction.reply({content: 'An error occurred using this command.', ephemeral: true});
 			

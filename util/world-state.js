@@ -12,7 +12,7 @@ async function getState() {
 
 		// The main case we want to get a new worldstate is if the new one matches the existing one
 		if (prevWorldState && worldStateData && prevWorldState.timestamp == worldStateData.timestamp) {
-			console.log('Checking for new state again in 60...');
+			console.log('\x1b[33mChecking for new state again in 60...\x1b[0m');
 			await new Promise(resolve => setTimeout(resolve, 60 * 1000));
 			return await getState();
 		}
@@ -41,14 +41,14 @@ async function getState() {
 	}
 	catch (err) {
 		// Log the error and wait 60 seconds before attempting to get the state again
-		console.log(err, response);
+		console.log('\x1b[31m', err, response, '\x1b[0m');
 		await new Promise(resolve => setTimeout(resolve, 60*1000));
 		return await getState();
 	}
 }
 
 async function worldStateHandler(guild) {
-	console.log('Updating World State...');
+	console.log('\x1b[36mUpdating World State...\x1b[0m');
 	const worldState = await getState();
 	const updateMessage = await guild.channels.cache.find(channel => channel.id == process.env.WORLD_STATE_CHANNEL_ID).messages.fetch(process.env.WORLD_STATE_MESSAGE_ID);
 	
@@ -64,9 +64,9 @@ async function worldStateHandler(guild) {
 		);
 
 	await updateMessage.edit({embeds: [newEmbed.data]});
-	console.log('World State updated!');
+	console.log('\x1b[32mWorld State updated!\x1b[0m');
 	const nextUpdate = Date.parse(worldState.shortestExpiry) - Date.now();
-	console.log(`Next update in ${Math.floor(nextUpdate / 1000)} seconds.`);
+	console.log(`\x1b[33mNext update in ${Math.floor(nextUpdate / 1000)} seconds.\x1b[0m`);
 	setTimeout(() => {
 		worldStateHandler(guild);
 	}, nextUpdate);

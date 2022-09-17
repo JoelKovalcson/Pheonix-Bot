@@ -1,7 +1,7 @@
 const { addVisitor, addInactive, removeInactive } = require("./storage");
 
 async function checkRoster(guild) {
-	console.log('Checking roster...');
+	console.log('\x1b[36mChecking roster...\x1b[0m');
 	const members = await guild.members.fetch();
 	
 	members.forEach((member, id) => {
@@ -26,7 +26,7 @@ async function checkRoster(guild) {
 		if (isInactive) addInactive(member);
 		else removeInactive(member);
 	});
-	console.log('Roster checked!');
+	console.log('\x1b[32mRoster checked!\x1b[0m');
 }
 
 module.exports = {checkRoster};
