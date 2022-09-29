@@ -187,7 +187,7 @@ async function writeStorage(guild) {
 					// Check to see if the messages are identical
 					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) visitorMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed.data]});
 				}
-				curMessage = await storageChannel.send({embeds: [new MessageEmbed().setTitle(visitorStorageName)]});
+				curMessage = await storageChannel.send({embeds: [new EmbedBuilder().setTitle(visitorStorageName)]});
 				curEmbed = new EmbedBuilder().setTitle(visitorStorageName);
 				// Add new message to the visitor message array
 				visitorMessages.push(curMessage);
@@ -230,7 +230,7 @@ async function writeStorage(guild) {
 				if (curMessage) {
 					if (JSON.stringify(curMessage.embeds[0].fields) !== JSON.stringify(curEmbed.data.fields)) inactiveMessages[messageNum-1] = await curMessage.edit({embeds: [curEmbed.data]});
 				}
-				curMessage = await storageChannel.send({embeds: [new MessageEmbed().setTitle(inactiveStorageName)]});
+				curMessage = await storageChannel.send({embeds: [new EmbedBuilder().setTitle(inactiveStorageName)]});
 				curEmbed = new EmbedBuilder().setTitle(inactiveStorageName);
 				// Add new message to the visitor message array
 				inactiveMessages.push(curMessage);
