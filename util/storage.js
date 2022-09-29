@@ -1,4 +1,5 @@
 const { TimestampStyles, time, EmbedBuilder, ThreadAutoArchiveDuration } = require("discord.js");
+const { getVisitorRole, getInactiveRole } = require("./get-roles");
 
 const visitorList = [];
 const visitorStorageName = "Visitor List";
@@ -13,52 +14,60 @@ async function readStorage(guild) {
 	await guild.members.fetch();
 	const storageChannel = await guild.channels.fetch(`${process.env.STORAGE_CHANNEL_ID}`);
 	const messages = (await storageChannel.messages.fetch()).reverse();
+	const visitorRole = getVisitorRole(guild);
+	const inactiveRole = getInactiveRole(guild);
 	// This currently assumes that this channel won't get filled with messages as the fetch gets up to 50 messages.
 	// Get messages from the channel
 	messages.forEach(message => {
 		// Find the messages storing visitor information
 		if (message.author.id == guild.client.user.id) {
-			if (message.embeds[0].title === visitorStorageName) visitorMessages.push(message);
-			else if (message.embeds[0].title === inactiveStorageName) inactiveMessages.push(message);
-			// Look through the fields
-			for (var field of message.embeds[0].fields) {
-				// Get all users listed in that field
-				const users = field.value.split('\n');
-				// For each user line
-				for (var user of users) {
-					// Get their information
-					const userInfo = user.split(' ');
-					// We know this regex will work as we wrote the original embed
-					const id = userInfo[0].match(/(\d+)/)[0];
-					const date = userInfo[userInfo.length-1];
-					if (!guild.members.cache.has(id)) {
-						console.log(`\x1b[33mUser ${id} not found, removing from cache.\x1b[0m`);
-						continue;
-					}
-					// Add them to the visitor list
-					if (message.embeds[0].title === visitorStorageName) {
-						if (visitorList.find(visitor => visitor.id == id)) continue;
-						if (!(guild.members.cache.get(id).roles.cache.findKey(role => role.id == process.env.VISITOR_ROLE_ID))) continue;
-						visitorList.push({
-							id,
-							date: parseInt(date.split(':')[1])
-						});
-					}
-					else if (message.embeds[0].title === inactiveStorageName) {
-						if (inactiveList.find(inactive => inactive.id == id)) continue;
-						if (!(guild.members.cache.get(id).roles.cache.findKey(role => role.id == process.env.INACTIVE_ROLE_ID))) continue;
-						inactiveList.push({
-							id,
-							date: parseInt(date.split(':')[1])
-						});
-					}
-				}
+			// Check if its a storage message
+			if (message.embeds[0].title === visitorStorageName) {
+				searchMessage(guild, message, visitorList, visitorMessages, visitorRole, storageChannel);
+			}
+			else if (message.embeds[0].title === inactiveStorageName) {
+				searchMessage(guild, message, inactiveList, inactiveMessages, inactiveRole, storageChannel);
 			}
 		}
 	});
 	console.log('\x1b[32mStorage read!\x1b[0m');
 	console.log(`\x1b[34m${visitorList.length} Visitors\x1b[0m`);
 	console.log(`\x1b[35m${inactiveList.length} Inactives\x1b[0m`);
+}
+
+async function searchMessage(guild, message, userList, messageList, role, storageChannel) {
+	let validMessage = false;
+	// Look through the fields (assumption is made that they exist since I wrote the storage method)
+	for (var field of message.embeds[0].fields) {
+		// Get all users listed in that field
+		const users = field.value.split('\n');
+		// For each user line
+		for (var user of users) {
+			// Get their information
+			const userInfo = user.split(' ');
+			// We know this regex will work as we wrote the original embed
+			const id = userInfo[0].match(/(\d+)/)[0];
+			const date = userInfo[userInfo.length-1];
+			if (!guild.members.cache.has(id)) {
+				console.log(`\x1b[33mUser ${id} not found, removing from cache.\x1b[0m`);
+				continue;
+			}
+			if (userList.find(user => user.id == id)) continue;
+			if ((guild.members.cache.get(id).roles.cache.find(r => r.id == role.id)) === undefined) continue;
+			userList.push({
+				id,
+				date: parseInt(date.split(':')[1])
+			});
+			validMessage = true;
+		}
+	}
+
+	if (!validMessage) {
+		await storageChannel.messages.delete(message);
+	}
+	else {
+		messageList.push(message);
+	}
 }
 
 async function cleanStorage(guild) {
