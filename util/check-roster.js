@@ -1,4 +1,4 @@
-const { addVisitor, addInactive, removeInactive } = require("./storage");
+const { addVisitor, addInactive, removeInactive, removeVisitor } = require("./storage");
 
 async function checkRoster(guild) {
 	console.log('\x1b[36mChecking roster...\x1b[0m');
@@ -23,6 +23,7 @@ async function checkRoster(guild) {
 		});
 
 		if (isVisitor) addVisitor(member);
+		else removeVisitor(member);
 		if (isInactive) addInactive(member);
 		else removeInactive(member);
 	});
